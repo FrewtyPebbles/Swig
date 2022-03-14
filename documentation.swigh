@@ -1,0 +1,13 @@
+
+#header:
+	#h1:
+	SWIG
+
+#body:
+	#div style[border-style<solid>]:
+		#h2:
+		Swig is a language that compiles to HTML.
+		#br style[border-style<solid>]:
+		Developed by William L.
+		#h3:
+		It's extremely efficient for writitng websites in.

@@ -1,3 +1,4 @@
+import os
 import subprocess
 import threading
 import time
@@ -43,8 +44,9 @@ class CustomNotebook(ttk.Notebook):
 
 	def on_close_release(self, event):
 		"""Called when the button is released"""
-		self.select("@%d,%d" % (event.x, event.y))
+		
 		if self.tab(self.select())['text'] != "Notes":
+			self.select("@%d,%d" % (event.x, event.y))
 			if not self.instate(['pressed']):
 				return
 
@@ -116,14 +118,11 @@ tabNames = {}
 window = tk.Tk()
 
 window.title("Swig Editor")
-style=ttk.Style()
-style.theme_use('classic')
-style.configure("Vertical.TScrollbar", background="black", bordercolor="red", arrowcolor="white")
-
+window.state('zoomed')
 window.rowconfigure(0, minsize=100, weight=1)
 window.columnconfigure(1, minsize=100, weight=1)
 tabs = CustomNotebook(window)
-terminal = tkscrolled.ScrolledText(state=tk.DISABLED, pady=5, padx=5, bg="black", insertbackground="white", fg="white", height=7)
+terminal = tkscrolled.ScrolledText(state=tk.DISABLED, pady=5, padx=5, bg="black", insertbackground="white", fg="white")
 txt_edit = tkscrolled.ScrolledText(window,  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white")
 projectDisplay = HtmlFrame(window, horizontal_scrollbar="auto")
 
@@ -218,61 +217,67 @@ def save_file(saveAs = False):
 			terminal.config(state=tk.DISABLED)
 			projectDisplay.load_html(open(((filepath.split('.')[0]) + ".html"), "r").read())
 			window.title(f"Swig Editor - {filepath}")
-
-def newFile():
+def newFileThread():
 	newWindowFrame = Frame(window)
 	newWindowLineNums = tk.Text(newWindowFrame,  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white",width=7)
 	newWindow = tkscrolled.ScrolledText(newWindowFrame,  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white")
 	newWindowFrame.grid(row=0, column=0, sticky="nsew")
 	newWindowLineNums.grid(row=0, column=0, sticky="ns")
 	newWindow.grid(row=0, column=1, sticky="nsew")
+	time.sleep(0.1)
+	newtab = tabs.add(child=newWindowFrame, text="Untitled.swigh", state='normal')
 	time.sleep(1)
-	tabNames["Untitled.swigh"] = tabs.add(child=newWindowFrame, text="Untitled.swigh", state='normal')
-	time.sleep(1)
-	tabs.select(tabNames["Untitled.swigh"])
+	tabs.select(newtab)
+	print((tabs.nametowidget(tabs.select(newtab)).winfo_children()))
+def newFile():
+	threading.Thread(target=newFileThread, name='newFileThread', daemon=True).start()
 
 
 #fr_buttons = tk.Frame(window, relief=tk.RAISED, bd=2, bg="black")
 
 #btn_open = tk.Button(fr_buttons, text="Open", command=open_file, bg="black", fg="white")
 #btn_save = tk.Button(fr_buttons, text="Save As...", command=lambda: save_file(True), bg="black", fg="white")
-my_menu=Menu(window, background='#000000', foreground='white', activebackground='grey', activeforeground='black')
-window.config(menu=my_menu)
-file_menu= Menu(my_menu, background='#000000', foreground='white', activebackground='grey', activeforeground='black')
-my_menu.add_cascade(label="File", menu=file_menu)
-file_menu.add_command(label="New",command=lambda:newFile())
-file_menu.add_command(label="Open...",command=open_file)
-file_menu.add_command(label="Save",command=lambda:save_file())
-file_menu.add_command(label="Save As...",command=lambda:save_file(True))
-file_menu.add_separator()
-file_menu.add_command(label="Exit",command=window.quit)
+
 
 tabs.grid(row=0, column=1, sticky="nsew")
 projectDisplay.grid(row=0, rowspan=3, column=3, sticky="nsew")
 terminal.grid(row=2, column=0,columnspan=2, sticky="nsew")
 tabs.add(txt_edit, text='Notes')
 
+my_menu=Menu(window, background='#000000', foreground='white', activebackground='grey', activeforeground='black', tearoff=0)
+file_menu= Menu(my_menu, background='#000000', foreground='white', activebackground='grey', activeforeground='black',tearoff=0)
+
+my_menu.add_cascade(label="File", menu=file_menu)
+
+file_menu.add_command(label="New",command=newFile)
+
+file_menu.add_command(label="Open...",command=open_file)
+
+file_menu.add_command(label="Save",command=save_file)
+
+file_menu.add_command(label="Save As...",command=lambda:save_file(True))
+
+file_menu.add_command(label="Exit",command=window.quit)
+
+window.config(menu=my_menu)	
+
 #IDE FUNCTIONALITY
 def handle_tab_changed(event):
 	global currentFilepath
-	time.sleep(0.001)
 	selection = event.widget.select()
-	time.sleep(0.001)
 	tab = event.widget.tab(selection, "text")
-	time.sleep(0.001)
 	window.title(f"Swig Editor - {tab}")
 	if str(tab) != "Notes" and str(tab) != "Untitled.swigh":
-		print(tab)
 		currentFilepath = str(tab)
-		time.sleep(0.001)
 		projectDisplay.load_html(open(((str(tab).split('.')[0]) + ".html"), "r").read())
+	time.sleep(1)
+	
 
 tabs.bind("<<NotebookTabChanged>>", handle_tab_changed)
 keyboard.add_hotkey("ctrl+s", lambda: save_file())
 #syntax
 def syntaxHighlight():
 	global currentFilepath
-	tempLinenum = 1
 	while True:
 		if tabs.tab(tabs.select(), "text") != "Notes":
 			currentFilepath = tabs.select()
@@ -338,32 +343,52 @@ def syntaxHighlight():
 				if addLinenum == True:
 					lineNum += 1
 				columnNum += 1
-			inactive_tab = (tabs.nametowidget(tabs.select()).winfo_children()[0])
-			NewLineNumbers = ""
-			scrollbarElem = (tabs.nametowidget(tabs.select()).winfo_children()[1]).winfo_children()[1]
-			codepos = scrollbarElem.yview()
-			if tempLinenum < lineNum:
-				NewLineNumbers +=(f"{lineNum-1}".ljust(6,'-')) + "|"
-				inactive_tab.insert("end", NewLineNumbers)
-				print(f"{lineNum} : {tempLinenum}")
-			elif tempLinenum > lineNum:
-				difference = abs(round((((lineNum-1)*7) - len(inactive_tab.get("1.0", 'end')))/7))
-				print(difference)
-				for j in range(0,difference):
-					inactive_tab.delete("1." + str(len(inactive_tab.get("1.0", 'end')) - 8),"end")
-			
-			
-			inactive_tab.yview_moveto(codepos[0])
-			#scrollbarElem.yview_moveto(codepos2[0])
-			time.sleep(0.01)
-			tempLinenum = lineNum
-			
-		
-		
+			time.sleep(1)
+
+
+#line numbers
+def drawLineNums(event):
+	global currentFilepath
+	#tempLinenum = 1
+	currentLN = 0
+	#NewLineNumbers = ""
+	#while True:
+	if tabs.tab(tabs.select(), "text") != "Notes":
+		#time.sleep(1)
+		inactive_tab = (tabs.nametowidget(tabs.select()).winfo_children()[0])
+		active_tab = (tabs.nametowidget(tabs.select()).winfo_children()[1]).winfo_children()[1]
+		editorText = active_tab.get("1.0",tk.END)
+		lineNum = len(editorText.split('\n'))
+		if currentLN != lineNum:
+			inactive_tab.delete("1.0","end")
+			for i in range(1,lineNum):
+				inactive_tab.insert("end", (f"{i}".ljust(6,'-')) + "|")
+		currentLN = lineNum
+		inactive_tab = (tabs.nametowidget(tabs.select()).winfo_children()[0])
+		scrollbarElem = (tabs.nametowidget(tabs.select()).winfo_children()[1]).winfo_children()[1]
+		codepos = scrollbarElem.yview()
+		threading.Thread(target=inactive_tab.yview_moveto(codepos[0]), daemon=True).start()
+#
+
+"""def linkScrollbar(event):
+	#while True:
+	if tabs.tab(tabs.select(), "text") != "Notes":
+		inactive_tab = (tabs.nametowidget(tabs.select()).winfo_children()[0])
+		scrollbarElem = (tabs.nametowidget(tabs.select()).winfo_children()[1]).winfo_children()[1]
+		codepos = scrollbarElem.yview()
+		threading.Thread(target=inactive_tab.yview_moveto(codepos[0]), daemon=True).start()"""
 
 
 t1 = threading.Thread(target=syntaxHighlight, name='t1', daemon=True)
 t1.start()
+#t2 = threading.Thread(target=drawLineNums, name='t2', daemon=True)
+#t2.start()
+
+window.bind_all('<KeyPress>', drawLineNums, add="+")
+window.bind('<Motion>', drawLineNums, add="+")
+window.bind_all('<MouseWheel>', drawLineNums, add="+")
+#t3 = threading.Thread(target=linkScrollbar, name='t3', daemon=True)
+#t3.start()
 
 #
 
