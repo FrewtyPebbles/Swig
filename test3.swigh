@@ -19,5 +19,11 @@
 This is outside of the main div.  It is in the body tag scope outside of the 
 	#span style [padding<1px> border-style<1px solid> background-color<red>]:
 		{mainDiv}
-
-
+	#div:
+		#list:
+This is another component.
+	#p:
+	You can add an HTML component as many times as you like.
+	#login:
+	#login:
+	#login:

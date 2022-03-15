@@ -340,7 +340,7 @@ def syntaxHighlight():
 				if syntax == 'n':
 					active_tab.tag_add("default", f"{lineNum}.{columnNum-1}", f"{lineNum}.{columnNum+1}")
 				elif syntax == 'e':
-					active_tab.tag_add("element", f"{lineNum}.{columnNum}", f"{lineNum}.{columnNum+1}")
+					active_tab.tag_add("element", f"{lineNum}.{columnNum-1}", f"{lineNum}.{columnNum+1}")
 				elif syntax == 't':
 					active_tab.tag_add("tag", f"{lineNum}.{columnNum-1}", f"{lineNum}.{columnNum+1}")
 				elif syntax == 'c':
@@ -353,6 +353,7 @@ def syntaxHighlight():
 					lineNum += 1
 				columnNum += 1
 			time.sleep(1)
+			active_tab.tag_add("default+1c", "1.0", "end-1c")
 
 
 #line numbers
