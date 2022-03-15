@@ -51,11 +51,6 @@ class CustomNotebook(ttk.Notebook):
 
 	def on_close_release(self, event):
 		"""Called when the button is released"""
-<<<<<<< HEAD
-
-=======
-
->>>>>>> 178aeea699f8b04e29249368f0de464e08c17f0f
 		if self.tab(self.select())['text'] != "Notes":
 			self.select("@%d,%d" % (event.x, event.y))
 			if not self.instate(['pressed']):
@@ -129,11 +124,7 @@ tabNames = {}
 window = tk.Tk()
 
 window.title("Swig Editor")
-<<<<<<< HEAD
 window.state(tk.NORMAL)
-=======
-window.state('zoomed')
->>>>>>> 178aeea699f8b04e29249368f0de464e08c17f0f
 window.rowconfigure(0, minsize=100, weight=1)
 window.columnconfigure(1, minsize=100, weight=1)
 tabs = CustomNotebook(window)
@@ -274,11 +265,9 @@ file_menu.add_command(label="Save As...",command=lambda:save_file(True))
 
 file_menu.add_command(label="Exit",command=window.quit)
 
-<<<<<<< HEAD
+
 window.config(menu=my_menu)
-=======
-window.config(menu=my_menu)
->>>>>>> 178aeea699f8b04e29249368f0de464e08c17f0f
+
 
 #IDE FUNCTIONALITY
 def handle_tab_changed(event):
@@ -290,11 +279,7 @@ def handle_tab_changed(event):
 		currentFilepath = str(tab)
 		projectDisplay.load_html(open(((str(tab).split('.')[0]) + ".html"), "r").read())
 	time.sleep(1)
-<<<<<<< HEAD
 
-=======
-
->>>>>>> 178aeea699f8b04e29249368f0de464e08c17f0f
 
 tabs.bind("<<NotebookTabChanged>>", handle_tab_changed)
 keyboard.add_hotkey("ctrl+s", lambda: save_file())
