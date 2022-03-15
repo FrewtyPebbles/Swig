@@ -18,6 +18,8 @@ import keyboard
 
 
 ##TKINTER CLOSEABLE NOTEBOOK TABS
+textEditorWidth = 50
+
 class CustomNotebook(ttk.Notebook):
 	"""A ttk Notebook with close buttons on each tab"""
 
@@ -123,14 +125,14 @@ tabNames = {}
 
 window = tk.Tk()
 
-window.title("Swig Editor")
+window.title("Swig IDE")
 window.state(tk.NORMAL)
 window.rowconfigure(0, minsize=100, weight=1)
 window.columnconfigure(1, minsize=100, weight=1)
 tabs = CustomNotebook(window)
-terminal = tkscrolled.ScrolledText(state=tk.DISABLED, pady=5, padx=5, bg="black", insertbackground="white", fg="white")
+terminal = tkscrolled.ScrolledText(state=tk.DISABLED, pady=5, padx=5, bg="black", insertbackground="white", fg="white", height=10)
 txt_edit = tkscrolled.ScrolledText(window,  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white")
-projectDisplay = HtmlFrame(window, horizontal_scrollbar="auto")
+projectDisplay = HtmlFrame(window, horizontal_scrollbar="auto", width=17)
 
 def open_file():
 	global currentFilepath
@@ -152,7 +154,7 @@ def open_file():
 			else:
 				newWindowFrame = Frame(window)
 				newWindowLineNums = tk.Text(newWindowFrame,  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white",width=7)
-				newWindow = tkscrolled.ScrolledText(newWindowFrame,  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white")
+				newWindow = tkscrolled.ScrolledText(newWindowFrame, wrap="none",  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white", width=textEditorWidth)
 				newWindowFrame.grid(row=0, column=0, sticky="nsew")
 				newWindowLineNums.grid(row=0, column=0, sticky="ns")
 				newWindow.grid(row=0, column=1, sticky="nsew")
@@ -163,7 +165,7 @@ def open_file():
 		except:
 			newWindowFrame = Frame(window)
 			newWindowLineNums = tk.Text(newWindowFrame,  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white",width=7)
-			newWindow = tkscrolled.ScrolledText(newWindowFrame,  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white")
+			newWindow = tkscrolled.ScrolledText(newWindowFrame, wrap="none",  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white", width=textEditorWidth)
 			newWindowFrame.grid(row=0, column=0, sticky="nsew")
 			newWindowLineNums.grid(row=0, column=0, sticky="ns")
 			newWindow.grid(row=0, column=1, sticky="nsew")
@@ -226,7 +228,7 @@ def save_file(saveAs = False):
 def newFileThread():
 	newWindowFrame = Frame(window)
 	newWindowLineNums = tk.Text(newWindowFrame,  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white",width=7)
-	newWindow = tkscrolled.ScrolledText(newWindowFrame,  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white")
+	newWindow = tkscrolled.ScrolledText(newWindowFrame, wrap="none",  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white", width=textEditorWidth)
 	newWindowFrame.grid(row=0, column=0, sticky="nsew")
 	newWindowLineNums.grid(row=0, column=0, sticky="ns")
 	newWindow.grid(row=0, column=1, sticky="nsew")
