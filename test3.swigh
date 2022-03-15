@@ -1,0 +1,23 @@
+#header:
+	#h1:
+	Test
+#body:
+	#div {mainDiv} style[border-style<solid>]:
+	This is a test of the HTML parser. 
+	 It only works for HTML and CSS.
+		#div:
+			#login:
+		#b style[color<purple>]:
+		This is outside of the div that wraps the login,
+		#i:
+		 because it is it will be placed after the login component.
+		#u:
+		I should add inline elements aswel. 
+		#span style [border-style<solid>background-color<lime>]:
+		That would make it so you dont need to write all of this on seperate lines.
+	
+This is outside of the main div.  It is in the body tag scope outside of the 
+	#span style [padding<1px> border-style<1px solid> background-color<red>]:
+		{mainDiv}
+
+

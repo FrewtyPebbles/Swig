@@ -1,0 +1,8 @@
+#header:
+	#h1:
+	Test
+#body:
+	#div style[border-style<solid> color<red>]:
+		#h2:
+		Test2
+		#login:

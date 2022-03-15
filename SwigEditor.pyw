@@ -6,7 +6,6 @@ import tkinter as tk
 from tkinter import Frame, Menu, Menubutton, ttk
 import tkinter.scrolledtext as tkscrolled
 from tkinter.filedialog import askopenfilename, asksaveasfilename
-from turtle import width
 from tkinterweb import HtmlFrame
 import keyboard
 
@@ -143,12 +142,12 @@ def open_file():
 	if not filepath:
 		return
 	with open(filepath, "r") as input_file:
-		currentFilepath = filepath
+		#currentFilepath = filepath
 		try:
 			if tabs.tab(tabs.select(), "text") == "Untitled.swigh":
 				textbox = (tabs.nametowidget(tabs.select()).winfo_children()[1]).winfo_children()[1]
 				#print((tabs.nametowidget(tabs.select()).winfo_children()[1]).winfo_children()[1])
-				tabs.tab(tabs.select(), text=currentFilepath)
+				tabs.tab(tabs.select(), text=filepath)
 				text = input_file.read()
 				textbox.insert(tk.END, text)
 			else:
@@ -158,8 +157,8 @@ def open_file():
 				newWindowFrame.grid(row=0, column=0, sticky="nsew")
 				newWindowLineNums.grid(row=0, column=0, sticky="ns")
 				newWindow.grid(row=0, column=1, sticky="nsew")
-				tabNames[currentFilepath] = tabs.add(newWindowFrame, text=currentFilepath)
-				tabs.select(tabNames[currentFilepath])
+				tabNames[filepath] = tabs.add(newWindowFrame, text=filepath)
+				tabs.select(tabNames[filepath])
 				text = input_file.read()
 				newWindow.insert(tk.END, text)
 		except:
@@ -169,8 +168,8 @@ def open_file():
 			newWindowFrame.grid(row=0, column=0, sticky="nsew")
 			newWindowLineNums.grid(row=0, column=0, sticky="ns")
 			newWindow.grid(row=0, column=1, sticky="nsew")
-			tabNames[currentFilepath] = tabs.add(newWindowFrame, text=currentFilepath)
-			tabs.select(tabNames[currentFilepath])
+			tabNames[filepath] = tabs.add(newWindowFrame, text=filepath)
+			tabs.select(tabNames[filepath])
 			text = input_file.read()
 			newWindow.insert(tk.END, text)
 		time.sleep(0.001)
@@ -184,7 +183,7 @@ def save_file(saveAs = False):
 	global currentFilepath
 	if tabs.tab(tabs.select())['text'] != "Notes":
 		if currentFilepath != "" and saveAs == False and tabs.tab(tabs.select())['text'] != "Untitled.swigh":
-			currentFilepath = tabs.tab(tabs.select())['text']
+			currentFilepath = tabs.tab(tabs.select(), "text")
 			if not currentFilepath:
 				tk.messagebox.showerror(title="ERROR", message="Something went wrong when trying to find your file.")
 				return
@@ -225,6 +224,7 @@ def save_file(saveAs = False):
 			terminal.config(state=tk.DISABLED)
 			projectDisplay.load_html(open(((filepath.split('.')[0]) + ".html"), "r").read())
 			window.title(f"Swig Editor - {filepath}")
+
 def newFileThread():
 	newWindowFrame = Frame(window)
 	newWindowLineNums = tk.Text(newWindowFrame,  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white",width=7)
@@ -338,17 +338,17 @@ def syntaxHighlight():
 					syntax = 't'
 
 				if syntax == 'n':
-					active_tab.tag_add("default", f"{lineNum}.{columnNum}", f"{lineNum}.{columnNum+1}")
+					active_tab.tag_add("default", f"{lineNum}.{columnNum-1}", f"{lineNum}.{columnNum+1}")
 				elif syntax == 'e':
 					active_tab.tag_add("element", f"{lineNum}.{columnNum}", f"{lineNum}.{columnNum+1}")
 				elif syntax == 't':
-					active_tab.tag_add("tag", f"{lineNum}.{columnNum}", f"{lineNum}.{columnNum+1}")
+					active_tab.tag_add("tag", f"{lineNum}.{columnNum-1}", f"{lineNum}.{columnNum+1}")
 				elif syntax == 'c':
-					active_tab.tag_add("class", f"{lineNum}.{columnNum}", f"{lineNum}.{columnNum+1}")
+					active_tab.tag_add("class", f"{lineNum}.{columnNum-1}", f"{lineNum}.{columnNum+1}")
 				elif syntax == 'i':
-					active_tab.tag_add("id", f"{lineNum}.{columnNum}", f"{lineNum}.{columnNum+1}")
+					active_tab.tag_add("id", f"{lineNum}.{columnNum-1}", f"{lineNum}.{columnNum+1}")
 				elif syntax == 'p':
-					active_tab.tag_add("tagparameter", f"{lineNum}.{columnNum}", f"{lineNum}.{columnNum+1}")
+					active_tab.tag_add("tagparameter", f"{lineNum}.{columnNum-1}", f"{lineNum}.{columnNum+1}")
 				if addLinenum == True:
 					lineNum += 1
 				columnNum += 1
