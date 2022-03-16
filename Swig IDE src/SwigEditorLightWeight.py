@@ -126,11 +126,14 @@ window = tk.Tk()
 
 window.title("Swig IDE")
 window.state(tk.NORMAL)
-window.rowconfigure(0, minsize=100, weight=1)
-window.columnconfigure(1, minsize=100, weight=1)
+window.grid_rowconfigure(0, weight=1)
 tabs = CustomNotebook(window)
 terminal = tkscrolled.ScrolledText(state=tk.DISABLED, pady=5, padx=5, bg="black", insertbackground="white", fg="white", height=10)
 txt_edit = tkscrolled.ScrolledText(window,  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white")
+window.grid_columnconfigure(0, weight=1)
+
+def scrollHorizontally(textWidget, event):
+    textWidget.xview_scroll((event.delta/120), "units")
 
 def open_file():
 	global currentFilepath
@@ -152,9 +155,13 @@ def open_file():
 			else:
 				newWindowFrame = Frame(window)
 				newWindowLineNums = tk.Text(newWindowFrame,  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white",width=7)
-				newWindow = tkscrolled.ScrolledText(newWindowFrame, wrap="none",  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white", width=textEditorWidth)
+				newWindow = tkscrolled.ScrolledText(newWindowFrame, wrap="none",  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white")#, width=textEditorWidth)
+				newWindow.bind('<Shift-MouseWheel>', lambda:scrollHorizontally(newWindow))
 				newWindowFrame.grid(row=0, column=0, sticky="nsew")
-				newWindowLineNums.grid(row=0, column=0, sticky="ns")
+				newWindowFrame.grid_rowconfigure(0, weight=1)
+				newWindowFrame.grid_columnconfigure(0, weight=0)
+				newWindowFrame.grid_columnconfigure(1, weight=1)
+				newWindowLineNums.grid(row=0, column=0, sticky="nsew")
 				newWindow.grid(row=0, column=1, sticky="nsew")
 				tabNames[filepath] = tabs.add(newWindowFrame, text=filepath)
 				tabs.select(tabNames[filepath])
@@ -163,9 +170,13 @@ def open_file():
 		except:
 			newWindowFrame = Frame(window)
 			newWindowLineNums = tk.Text(newWindowFrame,  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white",width=7)
-			newWindow = tkscrolled.ScrolledText(newWindowFrame, wrap="none",  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white", width=textEditorWidth)
+			newWindow = tkscrolled.ScrolledText(newWindowFrame, wrap="none",  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white")#, width=textEditorWidth)
+			newWindow.bind('<Shift-MouseWheel>', lambda:scrollHorizontally(newWindow))
 			newWindowFrame.grid(row=0, column=0, sticky="nsew")
-			newWindowLineNums.grid(row=0, column=0, sticky="ns")
+			newWindowFrame.grid_rowconfigure(0, weight=1)
+			newWindowFrame.grid_columnconfigure(0, weight=0)
+			newWindowFrame.grid_columnconfigure(1, weight=1)
+			newWindowLineNums.grid(row=0, column=0, sticky="nsew")
 			newWindow.grid(row=0, column=1, sticky="nsew")
 			tabNames[filepath] = tabs.add(newWindowFrame, text=filepath)
 			tabs.select(tabNames[filepath])
@@ -224,13 +235,17 @@ def save_file(saveAs = False):
 def newFileThread():
 	newWindowFrame = Frame(window)
 	newWindowLineNums = tk.Text(newWindowFrame,  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white",width=7)
-	newWindow = tkscrolled.ScrolledText(newWindowFrame, wrap="none",  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white", width=textEditorWidth)
+	newWindow = tkscrolled.ScrolledText(newWindowFrame, wrap="none",  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white")#, width=textEditorWidth)
+	newWindow.bind('<Shift-MouseWheel>', lambda:scrollHorizontally(newWindow))
 	newWindowFrame.grid(row=0, column=0, sticky="nsew")
-	newWindowLineNums.grid(row=0, column=0, sticky="ns")
+	newWindowFrame.grid_rowconfigure(0, weight=1)
+	newWindowFrame.grid_columnconfigure(0, weight=0)
+	newWindowFrame.grid_columnconfigure(1, weight=1)
+	newWindowLineNums.grid(row=0, column=0, sticky="nsew")
 	newWindow.grid(row=0, column=1, sticky="nsew")
 	time.sleep(0.1)
 	newtab = tabs.add(child=newWindowFrame, text="Untitled.swigh", state='normal')
-	time.sleep(1)
+	time.sleep(0.1)
 	tabs.select(newtab)
 	print((tabs.nametowidget(tabs.select(newtab)).winfo_children()))
 def newFile():
@@ -243,8 +258,8 @@ def newFile():
 #btn_save = tk.Button(fr_buttons, text="Save As...", command=lambda: save_file(True), bg="black", fg="white")
 
 
-tabs.grid(row=0, column=1, sticky="nsew")
-terminal.grid(row=2, column=0,columnspan=2, sticky="nsew")
+tabs.grid(row=0, column=0, sticky="nsew")
+terminal.grid(row=1, column=0, sticky="nsew")
 tabs.add(txt_edit, text='Notes')
 
 my_menu=Menu(window, background='#000000', foreground='white', activebackground='grey', activeforeground='black', tearoff=0)
@@ -373,14 +388,6 @@ def drawLineNums(event):
 		codepos = scrollbarElem.yview()
 		threading.Thread(target=inactive_tab.yview_moveto(codepos[0]), daemon=True).start()
 #
-
-"""def linkScrollbar(event):
-	#while True:
-	if tabs.tab(tabs.select(), "text") != "Notes":
-		inactive_tab = (tabs.nametowidget(tabs.select()).winfo_children()[0])
-		scrollbarElem = (tabs.nametowidget(tabs.select()).winfo_children()[1]).winfo_children()[1]
-		codepos = scrollbarElem.yview()
-		threading.Thread(target=inactive_tab.yview_moveto(codepos[0]), daemon=True).start()"""
 
 
 t1 = threading.Thread(target=syntaxHighlight, name='t1', daemon=True)
