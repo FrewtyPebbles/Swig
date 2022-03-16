@@ -264,6 +264,7 @@ tabs.add(txt_edit, text='Notes')
 
 my_menu=Menu(window, background='#000000', foreground='white', activebackground='grey', activeforeground='black', tearoff=0)
 file_menu= Menu(my_menu, background='#000000', foreground='white', activebackground='grey', activeforeground='black',tearoff=0)
+language_menu= Menu(my_menu, background='#000000', foreground='white', activebackground='grey', activeforeground='black',tearoff=0)
 
 my_menu.add_cascade(label="File", menu=file_menu)
 
@@ -276,6 +277,13 @@ file_menu.add_command(label="Save",command=save_file)
 file_menu.add_command(label="Save As...",command=lambda:save_file(True))
 
 file_menu.add_command(label="Exit",command=window.quit)
+
+my_menu.add_cascade(label="Language", menu=language_menu)
+
+language_menu.add_command(label="Swig")
+
+language_menu.add_command(label="Noodle")
+
 
 
 window.config(menu=my_menu)
