@@ -1,1 +1,15 @@
-style@
+@module>networking.py %this is a module and must go at the top.
+@source>indexscript %This is a script file
+@src>indexscript %This is the same script file
+@style>heirchys %this is a style file
+@sty>heirchys %this is the same style file
+
+
+#header:
+	#h1:
+	My Cool Website
+#body:
+Welcome to my COOL website.
+	#div {mainSite} style[display<flex>]:
+		#dropmenu < "shop", "red", "about", "green" >:
+		#dropmenu < "blog", "purple", "contact", "blue", "login", "yellow" >:     %the triangle brackets hold arguments for the component.
