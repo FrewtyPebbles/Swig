@@ -1,1 +1,1 @@
-fixed: components parent scope from producing a </parent element> ending element tag.
+--fixed: components parent scope from producing a </parent element> ending element tag.
