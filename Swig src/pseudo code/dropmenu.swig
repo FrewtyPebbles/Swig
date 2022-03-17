@@ -3,6 +3,6 @@
 %component code
 
 
-===
+=SCRIPT=
 
 %script for component
