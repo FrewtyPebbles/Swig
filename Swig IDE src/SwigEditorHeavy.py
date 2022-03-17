@@ -6,9 +6,9 @@ import tkinter as tk
 from tkinter import Frame, Menu, Menubutton, ttk
 import tkinter.scrolledtext as tkscrolled
 from tkinter.filedialog import askopenfilename, asksaveasfilename
+from tkinterweb import HtmlFrame
 import keyboard
 
-#USES python 3.6
 #SWIG IDE
 # VER 0.8.5
 
@@ -126,14 +126,12 @@ window = tk.Tk()
 
 window.title("Swig IDE")
 window.state(tk.NORMAL)
-window.grid_rowconfigure(0, weight=1)
+window.rowconfigure(0, minsize=100, weight=1)
+window.columnconfigure(1, minsize=100, weight=1)
 tabs = CustomNotebook(window)
 terminal = tkscrolled.ScrolledText(state=tk.DISABLED, pady=5, padx=5, bg="black", insertbackground="white", fg="white", height=10)
 txt_edit = tkscrolled.ScrolledText(window,  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white")
-window.grid_columnconfigure(0, weight=1)
-
-def scrollHorizontally(textWidget, event):
-    textWidget.xview_scroll((event.delta/120), "units")
+projectDisplay = HtmlFrame(window, horizontal_scrollbar="auto", width=17)
 
 def open_file():
 	global currentFilepath
@@ -155,13 +153,9 @@ def open_file():
 			else:
 				newWindowFrame = Frame(window)
 				newWindowLineNums = tk.Text(newWindowFrame,  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white",width=7)
-				newWindow = tkscrolled.ScrolledText(newWindowFrame, wrap="none",  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white")#, width=textEditorWidth)
-				newWindow.bind('<Shift-MouseWheel>', lambda:scrollHorizontally(newWindow))
+				newWindow = tkscrolled.ScrolledText(newWindowFrame, wrap="none",  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white", width=textEditorWidth)
 				newWindowFrame.grid(row=0, column=0, sticky="nsew")
-				newWindowFrame.grid_rowconfigure(0, weight=1)
-				newWindowFrame.grid_columnconfigure(0, weight=0)
-				newWindowFrame.grid_columnconfigure(1, weight=1)
-				newWindowLineNums.grid(row=0, column=0, sticky="nsew")
+				newWindowLineNums.grid(row=0, column=0, sticky="ns")
 				newWindow.grid(row=0, column=1, sticky="nsew")
 				tabNames[filepath] = tabs.add(newWindowFrame, text=filepath)
 				tabs.select(tabNames[filepath])
@@ -170,19 +164,16 @@ def open_file():
 		except:
 			newWindowFrame = Frame(window)
 			newWindowLineNums = tk.Text(newWindowFrame,  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white",width=7)
-			newWindow = tkscrolled.ScrolledText(newWindowFrame, wrap="none",  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white")#, width=textEditorWidth)
-			newWindow.bind('<Shift-MouseWheel>', lambda:scrollHorizontally(newWindow))
+			newWindow = tkscrolled.ScrolledText(newWindowFrame, wrap="none",  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white", width=textEditorWidth)
 			newWindowFrame.grid(row=0, column=0, sticky="nsew")
-			newWindowFrame.grid_rowconfigure(0, weight=1)
-			newWindowFrame.grid_columnconfigure(0, weight=0)
-			newWindowFrame.grid_columnconfigure(1, weight=1)
-			newWindowLineNums.grid(row=0, column=0, sticky="nsew")
+			newWindowLineNums.grid(row=0, column=0, sticky="ns")
 			newWindow.grid(row=0, column=1, sticky="nsew")
 			tabNames[filepath] = tabs.add(newWindowFrame, text=filepath)
 			tabs.select(tabNames[filepath])
 			text = input_file.read()
 			newWindow.insert(tk.END, text)
 		time.sleep(0.001)
+		projectDisplay.load_html(open(((filepath.split('.')[0]) + ".html"), "r").read())
 	time.sleep(0.001)
 	window.title(f"Swig Editor - {filepath}")
 
@@ -209,6 +200,7 @@ def save_file(saveAs = False):
 			terminal.config(state=tk.DISABLED)
 			window.title(f"Swig Editor - {currentFilepath}")
 			print(f"currentFilepath = {(currentFilepath.split('.')[0])}.html")
+			projectDisplay.load_html(open(((currentFilepath.split('.')[0]) + ".html"), "r").read())
 		else:
 			"""Save the current file as a new file."""
 			filepath = asksaveasfilename(
@@ -230,22 +222,19 @@ def save_file(saveAs = False):
 				terminal.delete(1.0,"end")
 				terminal.insert(1.0, err)
 			terminal.config(state=tk.DISABLED)
+			projectDisplay.load_html(open(((filepath.split('.')[0]) + ".html"), "r").read())
 			window.title(f"Swig Editor - {filepath}")
 
 def newFileThread():
 	newWindowFrame = Frame(window)
 	newWindowLineNums = tk.Text(newWindowFrame,  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white",width=7)
-	newWindow = tkscrolled.ScrolledText(newWindowFrame, wrap="none",  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white")#, width=textEditorWidth)
-	newWindow.bind('<Shift-MouseWheel>', lambda:scrollHorizontally(newWindow))
+	newWindow = tkscrolled.ScrolledText(newWindowFrame, wrap="none",  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white", width=textEditorWidth)
 	newWindowFrame.grid(row=0, column=0, sticky="nsew")
-	newWindowFrame.grid_rowconfigure(0, weight=1)
-	newWindowFrame.grid_columnconfigure(0, weight=0)
-	newWindowFrame.grid_columnconfigure(1, weight=1)
-	newWindowLineNums.grid(row=0, column=0, sticky="nsew")
+	newWindowLineNums.grid(row=0, column=0, sticky="ns")
 	newWindow.grid(row=0, column=1, sticky="nsew")
 	time.sleep(0.1)
 	newtab = tabs.add(child=newWindowFrame, text="Untitled.swigh", state='normal')
-	time.sleep(0.1)
+	time.sleep(1)
 	tabs.select(newtab)
 	print((tabs.nametowidget(tabs.select(newtab)).winfo_children()))
 def newFile():
@@ -258,13 +247,13 @@ def newFile():
 #btn_save = tk.Button(fr_buttons, text="Save As...", command=lambda: save_file(True), bg="black", fg="white")
 
 
-tabs.grid(row=0, column=0, sticky="nsew")
-terminal.grid(row=1, column=0, sticky="nsew")
+tabs.grid(row=0, column=1, sticky="nsew")
+projectDisplay.grid(row=0, rowspan=3, column=3, sticky="nsew")
+terminal.grid(row=2, column=0,columnspan=2, sticky="nsew")
 tabs.add(txt_edit, text='Notes')
 
 my_menu=Menu(window, background='#000000', foreground='white', activebackground='grey', activeforeground='black', tearoff=0)
 file_menu= Menu(my_menu, background='#000000', foreground='white', activebackground='grey', activeforeground='black',tearoff=0)
-language_menu= Menu(my_menu, background='#000000', foreground='white', activebackground='grey', activeforeground='black',tearoff=0)
 
 my_menu.add_cascade(label="File", menu=file_menu)
 
@@ -278,13 +267,6 @@ file_menu.add_command(label="Save As...",command=lambda:save_file(True))
 
 file_menu.add_command(label="Exit",command=window.quit)
 
-my_menu.add_cascade(label="Language", menu=language_menu)
-
-language_menu.add_command(label="Swig")
-
-language_menu.add_command(label="Noodle")
-
-
 
 window.config(menu=my_menu)
 
@@ -297,6 +279,7 @@ def handle_tab_changed(event):
 	window.title(f"Swig Editor - {tab}")
 	if str(tab) != "Notes" and str(tab) != "Untitled.swigh":
 		currentFilepath = str(tab)
+		projectDisplay.load_html(open(((str(tab).split('.')[0]) + ".html"), "r").read())
 	time.sleep(1)
 
 
@@ -396,6 +379,14 @@ def drawLineNums(event):
 		codepos = scrollbarElem.yview()
 		threading.Thread(target=inactive_tab.yview_moveto(codepos[0]), daemon=True).start()
 #
+
+"""def linkScrollbar(event):
+	#while True:
+	if tabs.tab(tabs.select(), "text") != "Notes":
+		inactive_tab = (tabs.nametowidget(tabs.select()).winfo_children()[0])
+		scrollbarElem = (tabs.nametowidget(tabs.select()).winfo_children()[1]).winfo_children()[1]
+		codepos = scrollbarElem.yview()
+		threading.Thread(target=inactive_tab.yview_moveto(codepos[0]), daemon=True).start()"""
 
 
 t1 = threading.Thread(target=syntaxHighlight, name='t1', daemon=True)

@@ -17,7 +17,7 @@
 </div>
 <style>
 	.list::-webkit-scrollbar-thumb:hover {
-  background: #555; 
+  background: #555;
   width: 25px;
   border-radius: 20px;
 }

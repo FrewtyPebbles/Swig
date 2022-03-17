@@ -1,1 +1,3 @@
-<div style = "text-align: center; font-family:'Courier New'; background-color: rgb(175, 235, 235); padding: 10px; border-style: solid; border-radius: 5px; display: inline-block;"><span style = "color: darkred; border-color: rgb(163, 238, 145); background-color: rgb(210, 248, 232); border-radius: 5px; border-style: dashed;">LOGIN</span><p><input style = "border-radius: 10px; background-color: cyan; color:blueviolet;">Username</input></p><p><input style = "border-radius: 10px; background-color: cyan; color:blueviolet;">Password</input></p></div>
+#div style[border-style<solid> border-radius<20px>]:
+	#h1:
+	LOGIN
