@@ -57,21 +57,74 @@ void appendScope(T & container, size_t index, ValueType & value)
 	}
 }
 
-std::string compileScript(char character, std::stringstream & compiledJavascript, std::string & scriptWordStream)
+std::string parseVariables(std::string input, std::vector<std::string> Classvariables, std::vector<std::string> IDvariables)
+{
+  std::cerr << input << "\n";
+  for(std::string i : Classvariables)
+  {
+    std::cerr << i << "\n";
+    if(input == i) return "document.getElementByClassName(\"" + input + "\")";
+  }
+  for(std::string i : IDvariables)
+  {
+    std::cerr << i << "\n";
+    if(input == i) return "document.getElementById(\"" + input + "\")";
+  }
+  return input;
+}
+
+std::string compileScript(char character, std::vector<std::string> & elementIDVariables, std::vector<std::string> & elementClassVariables, std::stringstream & compiledJavascript, std::string & scriptWordStream)
 {
   switch(character)
   {
     case ' ':
+      compiledJavascript << parseVariables(scriptWordStream, elementClassVariables, elementIDVariables);
       scriptWordStream = "";
+      compiledJavascript << std::string(1, character);
+      break;
+    case '\t':
+      compiledJavascript << parseVariables(scriptWordStream, elementClassVariables, elementIDVariables);
+      scriptWordStream = "";
+      compiledJavascript << std::string(1, character);
+      break;
+    case '\n':
+      compiledJavascript << parseVariables(scriptWordStream, elementClassVariables, elementIDVariables);
+      scriptWordStream = "";
+      compiledJavascript << std::string(1, character);
+      break;
+    case '+':
+      compiledJavascript << parseVariables(scriptWordStream, elementClassVariables, elementIDVariables);
+      scriptWordStream = "";
+      compiledJavascript << std::string(1, character);
+      break;
+    case '=':
+      compiledJavascript << parseVariables(scriptWordStream, elementClassVariables, elementIDVariables);
+      scriptWordStream = "";
+      compiledJavascript << std::string(1, character);
+      break;
+    case '.':
+      compiledJavascript << parseVariables(scriptWordStream, elementClassVariables, elementIDVariables);
+      scriptWordStream = "";
+      compiledJavascript << std::string(1, character);
+      break;
+    case '[':
+      compiledJavascript << parseVariables(scriptWordStream, elementClassVariables, elementIDVariables);
+      scriptWordStream = "";
+      compiledJavascript << std::string(1, character);
+      break;
+    case '-':
+      compiledJavascript << parseVariables(scriptWordStream, elementClassVariables, elementIDVariables);
+      scriptWordStream = "";
+      compiledJavascript << std::string(1, character);
       break;
     default:
       scriptWordStream.push_back(character);
   }
-  compiledJavascript << std::string(1, character);
+
 }
 
 
-component compileComponent(std::string componentName, bool SRCparsing)
+component compileComponent(std::string componentName, std::vector<std::string> & elementIDVariables, std::vector<std::string> & elementClassVariables, bool SRCparsing)
 {
     std::string scriptWordStream;
     component htmlComponent;
@@ -112,7 +165,7 @@ component compileComponent(std::string componentName, bool SRCparsing)
 	{
     if (SRCparsing)
     {
-      compileScript(character, compiledJavascript, scriptWordStream);
+      compileScript(character, elementIDVariables, elementClassVariables, compiledJavascript, scriptWordStream);
     }
     else
     {
@@ -181,6 +234,7 @@ component compileComponent(std::string componentName, bool SRCparsing)
         case ')':
           if (characterCheck && sqrbrackets == false)
           {
+            elementClassVariables.push_back(contentString);
             contentString.append("\" ");
           }
           else
@@ -213,6 +267,7 @@ component compileComponent(std::string componentName, bool SRCparsing)
         case '{':
           if (characterCheck)
           {
+            elementClassVariables.push_back(contentString);
             contentString.append(" id = \"");
           }
           else
@@ -292,7 +347,7 @@ component compileComponent(std::string componentName, bool SRCparsing)
           appendScope(scopetags, scope, "");
 
 
-          userComponent = compileComponent(scopeElement[scope]);
+          userComponent = compileComponent(scopeElement[scope], elementIDVariables, elementClassVariables);
           if(userComponent.getElement() != "null")
           {
             compiledElement << userComponent.getElement();

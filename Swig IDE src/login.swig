@@ -15,7 +15,8 @@ Password `:
 function login()
 {
 
-	alert("Welcome " + document.getElementById("username").value + "!");
+	alert("Welcome " + username.value + "!");
 
 }
+
 

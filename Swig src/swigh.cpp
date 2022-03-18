@@ -30,8 +30,14 @@ void appendScope(T & container, size_t index, ValueType & value)
 	}
 }
 
+
+
 std::stringstream compileHeirchy(std::fstream &file)
 {
+  //Compile time variables
+  std::vector<std::string> elementIDVariables;
+  std::vector<std::string> elementClassVariables;
+  //
 	std::stringstream CompiledHTML;
   std::stringstream CompiledJavascript;
 	char character;
@@ -119,6 +125,7 @@ std::stringstream compileHeirchy(std::fstream &file)
   		case ')':
   			if (characterCheck && sqrbrackets == false)
   			{
+          elementClassVariables.push_back(contentString);
   				contentString.append("\" ");
   			}
   			else
@@ -161,6 +168,7 @@ std::stringstream compileHeirchy(std::fstream &file)
   		case '}':
   			if (characterCheck)
   			{
+          elementIDVariables.push_back(contentString);
   				contentString.append("\" ");
   			}
   			else
@@ -223,7 +231,7 @@ std::stringstream compileHeirchy(std::fstream &file)
   			appendScope(scopetags, scope, "");
 
 
-  			userComponent = compileComponent(scopeElement[scope]);
+  			userComponent = compileComponent(scopeElement[scope], elementIDVariables, elementClassVariables);
   			if(userComponent.getElement() != "null")
   			{
   				CompiledHTML << userComponent.getElement();
