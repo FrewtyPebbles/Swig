@@ -37,6 +37,8 @@ std::stringstream compileHeirchy(std::fstream &file)
   //Compile time variables
   std::vector<std::string> elementIDVariables;
   std::vector<std::string> elementClassVariables;
+  std::string IDString = "";
+  std::string ClassString = "";
   //
 	std::stringstream CompiledHTML;
   std::stringstream CompiledJavascript;
@@ -115,6 +117,7 @@ std::stringstream compileHeirchy(std::fstream &file)
   		case '(':
   			if (characterCheck && sqrbrackets == false)
   			{
+          ClassString = "";
   				contentString.append(" class = \"");
   			}
   			else
@@ -125,7 +128,7 @@ std::stringstream compileHeirchy(std::fstream &file)
   		case ')':
   			if (characterCheck && sqrbrackets == false)
   			{
-          elementClassVariables.push_back(contentString);
+          elementClassVariables.push_back(ClassString);
   				contentString.append("\" ");
   			}
   			else
@@ -158,6 +161,7 @@ std::stringstream compileHeirchy(std::fstream &file)
   		case '{':
   			if (characterCheck)
   			{
+          IDString = "";
   				contentString.append(" id = \"");
   			}
   			else
@@ -168,7 +172,7 @@ std::stringstream compileHeirchy(std::fstream &file)
   		case '}':
   			if (characterCheck)
   			{
-          elementIDVariables.push_back(contentString);
+          elementIDVariables.push_back(IDString);
   				contentString.append("\" ");
   			}
   			else
@@ -252,6 +256,8 @@ std::stringstream compileHeirchy(std::fstream &file)
   			contentString = "";
   			break;
   		default:
+        ClassString.push_back(character);
+        IDString.push_back(character);
   			if (lastCharacter != '\n' && lastCharacter != '\r' && lastCharacter != '\t')
   			{
   				if (scope < lastscope)

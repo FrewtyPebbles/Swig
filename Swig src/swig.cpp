@@ -63,7 +63,7 @@ std::string parseVariables(std::string input, std::vector<std::string> Classvari
   for(std::string i : Classvariables)
   {
     std::cerr << i << "\n";
-    if(input == i) return "document.getElementByClassName(\"" + input + "\")";
+    if(input == i) return "document.getElementsByClassName(\"" + input + "\")";
   }
   for(std::string i : IDvariables)
   {
@@ -126,6 +126,8 @@ std::string compileScript(char character, std::vector<std::string> & elementIDVa
 
 component compileComponent(std::string componentName, std::vector<std::string> & elementIDVariables, std::vector<std::string> & elementClassVariables, bool SRCparsing)
 {
+  std::string IDString = "";
+  std::string ClassString = "";
     std::string scriptWordStream;
     component htmlComponent;
     component userComponent;
@@ -224,6 +226,7 @@ component compileComponent(std::string componentName, std::vector<std::string> &
         case '(':
           if (characterCheck && sqrbrackets == false)
           {
+            ClassString = "";
             contentString.append(" class = \"");
           }
           else
@@ -234,7 +237,7 @@ component compileComponent(std::string componentName, std::vector<std::string> &
         case ')':
           if (characterCheck && sqrbrackets == false)
           {
-            elementClassVariables.push_back(contentString);
+            elementClassVariables.push_back(ClassString);
             contentString.append("\" ");
           }
           else
@@ -267,7 +270,7 @@ component compileComponent(std::string componentName, std::vector<std::string> &
         case '{':
           if (characterCheck)
           {
-            elementClassVariables.push_back(contentString);
+            IDString = "";
             contentString.append(" id = \"");
           }
           else
@@ -278,6 +281,7 @@ component compileComponent(std::string componentName, std::vector<std::string> &
         case '}':
           if (characterCheck)
           {
+            elementIDVariables.push_back(IDString);
             contentString.append("\" ");
           }
           else
@@ -313,7 +317,21 @@ component compileComponent(std::string componentName, std::vector<std::string> &
           lastCharacter = character;
           break;
         case '\n':
-          if (contentString == "=SRC=")
+          if (contentString == "=SRC=" ||
+           contentString == "=script=" ||
+           contentString == "=Script=" ||
+              contentString == "=src=" ||
+              contentString == "=Src=" ||
+           contentString == "=source=" ||
+           contentString == "=Source=" ||
+           contentString == "=SOURCE=" ||
+           contentString == "=SCRIPT=" ||
+               contentString == "=JS=" ||
+               contentString == "=js=" ||
+       contentString == "=javascript=" ||
+       contentString == "=Javascript=" ||
+       contentString == "=JavaScript=" ||
+          contentString == "=JAVASCRIPT=")
           {
             SRCparsing = true;
           }
@@ -367,6 +385,8 @@ component compileComponent(std::string componentName, std::vector<std::string> &
           contentString = "";
           break;
         default:
+          ClassString.push_back(character);
+          IDString.push_back(character);
           if (lastCharacter != '\n' && lastCharacter != '\r' && lastCharacter != '\t')
           {
             if (scope < lastscope)

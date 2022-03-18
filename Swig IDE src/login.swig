@@ -1,4 +1,4 @@
-#div style[font-family<sansserif> border-color<hotpink> width<300px>text-align<center>background-color<pink>border-style<solid> border-radius<20px>]:
+#div {login} style[font-family<sansserif> border-color<hotpink> width<300px>text-align<center>background-color<pink>border-style<solid> border-radius<20px>]:
 	#h1:
 	LOGIN
 Username `: 
@@ -14,9 +14,11 @@ Password `:
 
 function login()
 {
-
+	
+	login.innerHTML ="<h4>Welcome " + username.value+ "</h4>";
 	alert("Welcome " + username.value + "!");
 
 }
+
 
 

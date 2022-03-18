@@ -33,7 +33,7 @@ The Docs.
 </h2>
 <div  id = "introDIV"  style = "text-indent:10px; border-color:lightblue; background-color:lightblue;border-style:solid; border-weight:1px; border-radius:10px 10px 0px 0px;" >
 
-<div style = "font-size:30px;color:white; -webkit-text-stroke:1px black; background-color:#2e9wbbf; padding:1px; border-radius:10px 10px 0px 0px;" >
+<div style = "font-size:30px;color:white; -webkit-text-stroke:1px black; background-color:#3b475c; padding:1px; border-radius:10px 10px 0px 0px;" >
 
 <h3>
 
@@ -94,7 +94,7 @@ Swig is a component based web design language that compiles to
 </i>
  files and strives to make web design much more intuitive and efficient.
 
-<div style = "font-family:sansserif; border-color:hotpink; width:300px;text-align:center;background-color:pink;border-style:solid; border-radius:20px;" >
+<div  id = "login"  style = "font-family:sansserif; border-color:hotpink; width:300px;text-align:center;background-color:pink;border-style:solid; border-radius:20px;" >
 
 <h1>
 
@@ -140,15 +140,19 @@ Login
 
 
 
+
+
 </div>
 </body>
 <script>
 function login()
 {
-
-	alert("Welcome " + username.value + "!");
+	
+	document.getElementById("login").innerHTML ="<h4>Welcome " + document.getElementById("username").value+ "</h4>";
+	alert("Welcome " + document.getElementById("username").value + "!");
 
 }
+
 
 
 </script>
