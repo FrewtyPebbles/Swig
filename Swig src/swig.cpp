@@ -59,15 +59,15 @@ void appendScope(T & container, size_t index, ValueType & value)
 
 std::string parseVariables(std::string input, std::vector<std::string> Classvariables, std::vector<std::string> IDvariables)
 {
-  std::cerr << input << "\n";
+  //std::cerr << input << "\n";
   for(std::string i : Classvariables)
   {
-    std::cerr << i << "\n";
+    //std::cerr << i << "\n";
     if(input == i) return "document.getElementsByClassName(\"" + input + "\")";
   }
   for(std::string i : IDvariables)
   {
-    std::cerr << i << "\n";
+    //std::cerr << i << "\n";
     if(input == i) return "document.getElementById(\"" + input + "\")";
   }
   return input;
