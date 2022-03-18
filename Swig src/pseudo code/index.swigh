@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-style@heirchys
-=======
 @module>networking.py %this is a module and must go at the top.
 @source>indexscript %This is a script file
 @src>indexscript %This is the same script file
@@ -16,4 +13,3 @@ Welcome to my COOL website.
 	#div {mainSite} style[display<flex>]:
 		#dropmenu < "shop", "red", "about", "green" >:
 		#dropmenu < "blog", "purple", "contact", "blue", "login", "yellow" >:     %the triangle brackets hold arguments for the component.
->>>>>>> 0aae391062416befa034fe89e64966cd34b7c4f6

@@ -3,6 +3,6 @@
 %component code
 
 
-=SCRIPT=
+=SCR=
 
 %script for component

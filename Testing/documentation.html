@@ -7,13 +7,10 @@
 
 SWIG
 
+
+
 </i>
 </h1>
-<meta http-equiv = "refresh"  content = "3" >
-
-
-
-</meta>
 </header>
 <body style = " font-family:Helvetica; background-color:lightyellow;" >
 
@@ -106,88 +103,34 @@ LOGIN
 </h1>
 Username : 
 
-<input style = "border-color:hotpink; width:230px; border-radius:5px; padding:10px; margin:10px;" >
+<input  id = "username"  style = "border-color:hotpink; width:230px; border-radius:5px; padding:10px; margin:10px;" >
 
 </input>
 Password : 
 
-<input style = "border-color:hotpink; width:230px; border-radius:5px; padding:10px; margin:10px;" >
+<input  id = "password"  style = "border-color:hotpink; width:230px; border-radius:5px; padding:10px; margin:10px;" >
 
 </input>
-<div style = "display:flex;" >
+<br>
 
-<div style = "background-color:red;width:100px;text-align:center;border-style:solid;border-radius:10px;" >
+</br>
+<button onclick = "login()"  style = "padding:10px;" >
 
-<div>
+Login
 
-<p>
-
-item1
-
-</p>
-<p>
-
-item2
-
-</p>
-<p>
-
-item3
-
-</p>
-<p>
-
-item4
-
-</p>
-<p>
-
-item5
+</button>
+<br>
 
 
 
-</p>
-</div>
-</div>
-
-<div style = "background-color:red;width:100px;text-align:center;border-style:solid;border-radius:10px;" >
-
-<div>
-
-<p>
-
-item1
-
-</p>
-<p>
-
-item2
-
-</p>
-<p>
-
-item3
-
-</p>
-<p>
-
-item4
-
-</p>
-<p>
-
-item5
-
-
-
-</p>
-</div>
-</div>
-
+</br>
 
 
 </div>
-</div>
+
+
+
+
 
 
 
@@ -197,3 +140,12 @@ item5
 
 </div>
 </body>
+<script>
+function login()
+{
+
+	alert("Welcome " + document.getElementById("username").value + "!");
+
+}
+
+</script>

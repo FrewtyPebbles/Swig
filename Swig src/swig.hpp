@@ -20,4 +20,4 @@ public:
 	std::string setElement(std::string _element);
 };
 
-component compileComponent(std::string componentName);
+component compileComponent(std::string componentName, bool SRCparsing = false);

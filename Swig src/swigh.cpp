@@ -33,6 +33,7 @@ void appendScope(T & container, size_t index, ValueType & value)
 std::stringstream compileHeirchy(std::fstream &file)
 {
 	std::stringstream CompiledHTML;
+  std::stringstream CompiledJavascript;
 	char character;
 	char lastCharacter = 'a';
 	std::vector<std::string> scopeContent;
@@ -50,6 +51,7 @@ std::stringstream compileHeirchy(std::fstream &file)
 	bool element = true;
 	component userComponent;
   bool escape = false;
+  bool sqrbrackets = false;
 	while (file >> std::noskipws >> character)
 	{
     //Start of parser
@@ -72,33 +74,40 @@ std::stringstream compileHeirchy(std::fstream &file)
   			}
   			break;
   		case '#':
-  			if (scopeElement[lastscope] == "component" && lastCharacter == '#' && lastscope > scope)
-  			{
-  				std::cerr << " > ERROR L:" << linenum << " > You are attempting to place an element inside of an invalid scope.\n - ? - If the parent element is a component, please place your elements inside of that component's .swig file.";
-  			}
-  			if (lastscope >= scope)
-  			{
-  				for (unsigned i = lastscope; i > scope-1; --i)
-  				{
-  					if (scopeElement[i] != "" && scopeElement[i] != "component")
-  					{
-  						CompiledHTML << "</"<< scopeElement[i] << ">\n";
-  						scopeElement[i] = "";
-  					}
-  				}
-  			}
-  			else if (scope == lastscope)
-  			{
-  				if (scopeElement[scope] != "")
-  				{
-  					CompiledHTML << "</"<< scopeElement[scope] << ">\n";
-  				}
-  			}
-  			characterCheck = true;
-  			element = true;
+        if (sqrbrackets == false)
+        {
+    			if (scopeElement[lastscope] == "component" && lastCharacter == '#' && lastscope > scope)
+    			{
+    				std::cerr << " > ERROR L:" << linenum << " > You are attempting to place an element inside of an invalid scope.\n - ? - If the parent element is a component, please place your elements inside of that component's .swig file.";
+    			}
+    			if (lastscope >= scope)
+    			{
+    				for (unsigned i = lastscope; i > scope-1; --i)
+    				{
+    					if (scopeElement[i] != "" && scopeElement[i] != "component")
+    					{
+    						CompiledHTML << "</"<< scopeElement[i] << ">\n";
+    						scopeElement[i] = "";
+    					}
+    				}
+    			}
+    			else if (scope == lastscope)
+    			{
+    				if (scopeElement[scope] != "")
+    				{
+    					CompiledHTML << "</"<< scopeElement[scope] << ">\n";
+    				}
+    			}
+    			characterCheck = true;
+    			element = true;
+        }
+        else
+        {
+          contentString.append("#");
+        }
   			break;
   		case '(':
-  			if (characterCheck)
+  			if (characterCheck && sqrbrackets == false)
   			{
   				contentString.append(" class = \"");
   			}
@@ -108,7 +117,7 @@ std::stringstream compileHeirchy(std::fstream &file)
   			}
   			break;
   		case ')':
-  			if (characterCheck)
+  			if (characterCheck && sqrbrackets == false)
   			{
   				contentString.append("\" ");
   			}
@@ -118,6 +127,7 @@ std::stringstream compileHeirchy(std::fstream &file)
   			}
   			break;
   		case '[':
+        sqrbrackets = true;
   			if (characterCheck)
   			{
   				contentString.append(" = \"");
@@ -128,6 +138,7 @@ std::stringstream compileHeirchy(std::fstream &file)
   			}
   			break;
   		case ']':
+        sqrbrackets = false;
   			if (characterCheck)
   			{
   				contentString.append("\" ");
@@ -216,6 +227,7 @@ std::stringstream compileHeirchy(std::fstream &file)
   			if(userComponent.getElement() != "null")
   			{
   				CompiledHTML << userComponent.getElement();
+          CompiledJavascript << userComponent.getScript();
   				setScope(scopeElement, scope, "");
   				setScope(scopetags, scope, "");
   				scopeElement[scope] = "component";
@@ -290,5 +302,8 @@ std::stringstream compileHeirchy(std::fstream &file)
 		CompiledHTML << "</"<< scopeElement[i] << ">\n";
 		scopeElement[i] = "";
 	}
+  CompiledHTML << "<script>";
+  CompiledJavascript << "</script>";
+  CompiledHTML << CompiledJavascript.str();
 	return CompiledHTML;
 }

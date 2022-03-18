@@ -2,9 +2,20 @@
 	#h1:
 	LOGIN
 Username `: 
-	#input style[border-color<hotpink> width<230px> border-radius<5px> padding<10px> margin<10px>]:
+	#input {username} style[border-color<hotpink> width<230px> border-radius<5px> padding<10px> margin<10px>]:
 Password `: 
-	#input style[border-color<hotpink> width<230px> border-radius<5px> padding<10px> margin<10px>]:
-	#div style[display<flex>]:
-		#list:
-		#list:
+	#input {password} style[border-color<hotpink> width<230px> border-radius<5px> padding<10px> margin<10px>]:
+	#br:
+	#button onclick[login()] style[padding<10px>]:
+	Login
+	#br:
+
+=SRC=
+
+function login()
+{
+
+	alert("Welcome " + document.getElementById("username").value + "!");
+
+}
+

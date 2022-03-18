@@ -26,6 +26,8 @@ std::string component::setElement(std::string _element)
     return element;
 }
 
+
+
 template<class T, typename ValueType>
 void setScope(T & container, size_t index, ValueType & value)
 {
@@ -55,13 +57,29 @@ void appendScope(T & container, size_t index, ValueType & value)
 	}
 }
 
-component compileComponent(std::string componentName)
+std::string compileScript(char character, std::stringstream & compiledJavascript, std::string & scriptWordStream)
 {
-	component htmlComponent;
-    std::ifstream componentFile;
-    char character;
+  switch(character)
+  {
+    case ' ':
+      scriptWordStream = "";
+      break;
+    default:
+      scriptWordStream.push_back(character);
+  }
+  compiledJavascript << std::string(1, character);
+}
+
+
+component compileComponent(std::string componentName, bool SRCparsing)
+{
+    std::string scriptWordStream;
+    component htmlComponent;
+    component userComponent;
     std::stringstream compiledElement;
     std::stringstream compiledJavascript;
+    std::ifstream componentFile;
+    char character;
   	char lastCharacter = 'a';
   	std::vector<std::string> scopeContent;
   	std::vector<std::string> scopeElement;
@@ -76,8 +94,9 @@ component compileComponent(std::string componentName)
   	unsigned linenum = 1;
   	bool characterCheck = true;
   	bool element = true;
-  	component userComponent;
+    bool sqrbrackets = false;
     bool escape = false;
+
 	//if component file name doesnt exist return failure
 	try
     {
@@ -91,231 +110,254 @@ component compileComponent(std::string componentName)
     ///USER ELEMENT
     while (componentFile >> std::noskipws >> character)
 	{
-    //Start of parser
-    if(!escape)
+    if (SRCparsing)
     {
-      switch (character)
+      compileScript(character, compiledJavascript, scriptWordStream);
+    }
+    else
+    {
+      //Start of parser
+      if(!escape)
       {
-      case ' ':
-        element = false;
-        contentString.push_back(character);
-        break;
-      case ',':
-        if (characterCheck)
+        switch (character)
         {
-          contentString.append(" ");
-        }
-        else
-        {
+        case ' ':
+          element = false;
           contentString.push_back(character);
-        }
-        break;
-      case '#':
-        if (scopeElement[lastscope] == "component" && lastCharacter == '#' && lastscope > scope)
-        {
-          std::cerr << " > ERROR L:" << linenum << " > You are attempting to place an element inside of an invalid scope.\n - ? - If the parent element is a component, please place your elements inside of that component's .swig file.";
-        }
-        if (lastscope >= scope)
-        {
-          for (unsigned i = lastscope; i > scope-1; --i)
+          break;
+        case ',':
+          if (characterCheck)
           {
-            if (scopeElement[i] != "" && scopeElement[i] != "component")
-            {
-              compiledElement << "</"<< scopeElement[i] << ">\n";
-              scopeElement[i] = "";
-            }
-          }
-        }
-        else if (scope == lastscope)
-        {
-          if (scopeElement[scope] != "")
-          {
-            compiledElement << "</"<< scopeElement[scope] << ">\n";
-          }
-        }
-        characterCheck = true;
-        element = true;
-        break;
-      case '(':
-        if (characterCheck)
-        {
-          contentString.append(" class = \"");
-        }
-        else
-        {
-          contentString.push_back(character);
-        }
-        break;
-      case ')':
-        if (characterCheck)
-        {
-          contentString.append("\" ");
-        }
-        else
-        {
-          contentString.push_back(character);
-        }
-        break;
-      case '[':
-        if (characterCheck)
-        {
-          contentString.append(" = \"");
-        }
-        else
-        {
-          contentString.push_back(character);
-        }
-        break;
-      case ']':
-        if (characterCheck)
-        {
-          contentString.append("\" ");
-        }
-        else
-        {
-          contentString.push_back(character);
-        }
-        break;
-      case '{':
-        if (characterCheck)
-        {
-          contentString.append(" id = \"");
-        }
-        else
-        {
-          contentString.push_back(character);
-        }
-        break;
-      case '}':
-        if (characterCheck)
-        {
-          contentString.append("\" ");
-        }
-        else
-        {
-          contentString.push_back(character);
-        }
-        break;
-      case '`':
-        escape = true;
-        break;
-      case '<':
-        if (characterCheck)
-        {
-          contentString.append(":");
-        }
-        else
-        {
-          contentString.push_back(character);
-        }
-        break;
-      case '>':
-        if (characterCheck)
-        {
-          contentString.append(";");
-        }
-        else
-        {
-          contentString.push_back(character);
-        }
-        break;
-      case '\t':
-        scope++;
-        lastCharacter = character;
-        break;
-      case '\n':
-        if (element == false)
-        {
-          contentString.push_back(character);
-          appendScope(scopeContent, scope, contentString);
-        }
-        compiledElement << contentString << "\n";
-        scope = 1;
-        ++linenum;
-        element = false;
-        contentString = "";
-        lastCharacter = character;
-        break;
-      case ':':
-        if (characterCheck)
-        {
-            appendScope(scopetags, scope, contentString);
-        }
-        element = true;
-        if ( linenum > 0 && elementString == "")
-        {
-          std::cerr << " > ERROR L:" << linenum << " > Element is missing!\n";
-        }
-        characterCheck = false;
-        setScope(scopeElement, scope, elementString);
-        appendScope(scopetags, scope, "");
-
-
-        userComponent = compileComponent(scopeElement[scope]);
-        if(userComponent.getElement() != "null")
-        {
-          compiledElement << userComponent.getElement();
-          setScope(scopeElement, scope, "");
-          setScope(scopetags, scope, "");
-          scopeElement[scope] = "component";
-          scopetags[scope] = "";
-        }
-        else
-        {
-          compiledElement << "<"<< scopeElement[scope] << scopetags[scope] << ">\n";
-          setScope(scopetags, scope, "");
-          lastscope = scope;
-        }
-        //}
-        elementString = "";
-        contentString = "";
-        break;
-      default:
-        if (lastCharacter != '\n' && lastCharacter != '\r' && lastCharacter != '\t')
-        {
-          if (scope < lastscope)
-          {
-            for (unsigned i = lastscope; i > scope; --i)
-            {
-              if (scopeElement[i] != "" && scopeElement[i] != "component")
-              {
-              compiledElement << "</"<< scopeElement[i] << ">\n";
-              scopeElement[i] = "";
-              }
-            }
-            lastscope = scope;
-          }
-        }
-        if (lastCharacter == ':')
-        {
-          std::cerr << " > ERROR L:" << linenum << " > Characters found on the right side of ':'.\n";
-        }
-
-        if (characterCheck)
-        {
-          if (element == true)
-          {
-            elementString.push_back(character);
+            contentString.append(" ");
           }
           else
           {
             contentString.push_back(character);
           }
+          break;
+        case '#':
+          if (sqrbrackets == false)
+          {
+            if (scopeElement[lastscope] == "component" && lastCharacter == '#' && lastscope > scope)
+            {
+              std::cerr << " > ERROR L:" << linenum << " > You are attempting to place an element inside of an invalid scope.\n - ? - If the parent element is a component, please place your elements inside of that component's .swig file.";
+            }
+            if (lastscope >= scope)
+            {
+              for (unsigned i = lastscope; i > scope-1; --i)
+              {
+                if (scopeElement[i] != "" && scopeElement[i] != "component")
+                {
+                  compiledElement << "</"<< scopeElement[i] << ">\n";
+                  scopeElement[i] = "";
+                }
+              }
+            }
+            else if (scope == lastscope)
+            {
+              if (scopeElement[scope] != "")
+              {
+                compiledElement << "</"<< scopeElement[scope] << ">\n";
+              }
+            }
+            characterCheck = true;
+            element = true;
+          }
+          else
+          {
+            contentString.append("#");
+          }
+          break;
+        case '(':
+          if (characterCheck && sqrbrackets == false)
+          {
+            contentString.append(" class = \"");
+          }
+          else
+          {
+            contentString.push_back(character);
+          }
+          break;
+        case ')':
+          if (characterCheck && sqrbrackets == false)
+          {
+            contentString.append("\" ");
+          }
+          else
+          {
+            contentString.push_back(character);
+          }
+          break;
+        case '[':
+          sqrbrackets = true;
+          if (characterCheck)
+          {
+            contentString.append(" = \"");
+          }
+          else
+          {
+            contentString.push_back(character);
+          }
+          break;
+        case ']':
+          sqrbrackets = false;
+          if (characterCheck)
+          {
+            contentString.append("\" ");
+          }
+          else
+          {
+            contentString.push_back(character);
+          }
+          break;
+        case '{':
+          if (characterCheck)
+          {
+            contentString.append(" id = \"");
+          }
+          else
+          {
+            contentString.push_back(character);
+          }
+          break;
+        case '}':
+          if (characterCheck)
+          {
+            contentString.append("\" ");
+          }
+          else
+          {
+            contentString.push_back(character);
+          }
+          break;
+        case '`':
+          escape = true;
+          break;
+        case '<':
+          if (characterCheck)
+          {
+            contentString.append(":");
+          }
+          else
+          {
+            contentString.push_back(character);
+          }
+          break;
+        case '>':
+          if (characterCheck)
+          {
+            contentString.append(";");
+          }
+          else
+          {
+            contentString.push_back(character);
+          }
+          break;
+        case '\t':
+          scope++;
+          lastCharacter = character;
+          break;
+        case '\n':
+          if (contentString == "=SRC=")
+          {
+            SRCparsing = true;
+          }
+          else
+          {
+            if (element == false)
+            {
+              contentString.push_back(character);
+              appendScope(scopeContent, scope, contentString);
+            }
+            compiledElement << contentString << "\n";
+          }
+          scope = 1;
+          ++linenum;
+          element = false;
+          contentString = "";
+          lastCharacter = character;
+          break;
+        case ':':
+          if (characterCheck)
+          {
+              appendScope(scopetags, scope, contentString);
+          }
+          element = true;
+          if ( linenum > 0 && elementString == "")
+          {
+            std::cerr << " > ERROR L:" << linenum << " > Element is missing!\n";
+          }
+          characterCheck = false;
+          setScope(scopeElement, scope, elementString);
+          appendScope(scopetags, scope, "");
+
+
+          userComponent = compileComponent(scopeElement[scope]);
+          if(userComponent.getElement() != "null")
+          {
+            compiledElement << userComponent.getElement();
+            setScope(scopeElement, scope, "");
+            setScope(scopetags, scope, "");
+            scopeElement[scope] = "component";
+            scopetags[scope] = "";
+          }
+          else
+          {
+            compiledElement << "<"<< scopeElement[scope] << scopetags[scope] << ">\n";
+            setScope(scopetags, scope, "");
+            lastscope = scope;
+          }
+          //}
+          elementString = "";
+          contentString = "";
+          break;
+        default:
+          if (lastCharacter != '\n' && lastCharacter != '\r' && lastCharacter != '\t')
+          {
+            if (scope < lastscope)
+            {
+              for (unsigned i = lastscope; i > scope; --i)
+              {
+                if (scopeElement[i] != "" && scopeElement[i] != "component")
+                {
+                compiledElement << "</"<< scopeElement[i] << ">\n";
+                scopeElement[i] = "";
+                }
+              }
+              lastscope = scope;
+            }
+          }
+          if (lastCharacter == ':')
+          {
+            std::cerr << " > ERROR L:" << linenum << " > Characters found on the right side of ':'.\n";
+          }
+
+          if (characterCheck)
+          {
+            if (element == true)
+            {
+              elementString.push_back(character);
+            }
+            else
+            {
+              contentString.push_back(character);
+            }
+          }
+          else
+          {
+          contentString.push_back(character);
+          }
+          break;
         }
-        else
-        {
-        contentString.push_back(character);
-        }
-        break;
+        lastCharacter = character;
       }
-      lastCharacter = character;
+      else
+      {
+        contentString.push_back(character);
+        escape = false;
+      }
+      //End of parser
     }
-    else
-    {
-      contentString.push_back(character);
-      escape = false;
-    }
-    //End of parser
 	}
   if (element == false)
 	{

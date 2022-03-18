@@ -3,7 +3,6 @@
 	#h1 style[color<white> -webkit-text-stroke<1px black>text-align<center> font-family<Courier New>]:
 		#i:
 		SWIG
-	#meta http-equiv[refresh] content[3]:
 
 #body style[ font-family<Helvetica> background-color<lightyellow>]:
 	
@@ -39,5 +38,7 @@
 		.html
 	 files and strives to make web design much more intuitive and efficient.
 		#login:
+
+
 
 
