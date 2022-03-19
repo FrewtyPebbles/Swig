@@ -12,7 +12,6 @@ Password^ `:
 	#button onclick[login()] style[padding<10px>]:
 	Login
 	#br:
-	#list |TODO LIST&Go to the store.&Eat lunch.&Study for exams.&Organize repo.&Make documentation website.|:
 =SRC=
 
 function login()
@@ -22,14 +21,4 @@ function login()
 	alert("Welcome " + username.value + "!");
 
 }
-
-
-
-
-
-
-
-
-
-
 

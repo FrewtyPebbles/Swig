@@ -95,6 +95,8 @@ std::stringstream compileHeirchy(std::fstream &file)
   				contentString.push_back(character);
   			}
   			break;
+		case '\r':
+          break;
   		case '#':
         if (sqrbrackets == false)
         {

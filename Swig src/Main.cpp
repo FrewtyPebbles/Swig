@@ -6,7 +6,7 @@
 #include "swig.hpp"
 #include "swigs.hpp"
 
-const std::string VERSION_NUM = "0.4.5";
+const std::string VERSION_NUM = "0.4.7";
 
 int main(int argc, char *argv[])
 {

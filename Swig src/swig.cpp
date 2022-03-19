@@ -1,12 +1,12 @@
 #include "swig.hpp"
 
-component::component(){}
+component::component(){};
 
 component::component(std::string _script, std::string _element)
 {
     script = _script;
     element = _element;
-}
+};
 std::string component::getScript()
 {
     return script;
@@ -124,7 +124,7 @@ void compileScript(char character, std::vector<std::string> & elementIDVariables
 }
 
 
-component compileComponent(std::string componentName, std::vector<std::string> & elementIDVariables, std::vector<std::string> & elementClassVariables, std::vector<std::string> & elementArguments, bool SRCparsing)
+component compileComponent(std::string componentName, std::vector<std::string> & elementIDVariables, std::vector<std::string> & elementClassVariables, std::vector<std::string> & elementArguments)
 {
   std::string IDString = "";
   std::string ClassString = "";
@@ -159,6 +159,8 @@ component compileComponent(std::string componentName, std::vector<std::string> &
     std::string instreplaceString;
     std::vector<std::string> swigelementArguments;
     std::vector<std::string> argumentReplaces;
+    //scripting
+    bool SRCCodeParsing = false;
 	//if component file name doesnt exist return failure
 	try
     {
@@ -172,7 +174,7 @@ component compileComponent(std::string componentName, std::vector<std::string> &
     ///USER ELEMENT
     while (componentFile >> std::noskipws >> character)
 	{
-    if (SRCparsing)
+    if (SRCCodeParsing == true)
     {
       compileScript(character, elementIDVariables, elementClassVariables, compiledJavascript, scriptWordStream);
     }
@@ -191,6 +193,8 @@ component compileComponent(std::string componentName, std::vector<std::string> &
           element = false;
           replaceString = "";
           contentString.push_back(character);
+          break;
+        case '\r':
           break;
         case ',':
           if (elementArg == true)
@@ -274,9 +278,9 @@ component compileComponent(std::string componentName, std::vector<std::string> &
           {
             for (size_t i = 0; i < argumentReplaces.size(); ++i)
             {
-              //swag
-              std::cerr << replaceString << '\n';
-              std::cerr << elementArguments[i] << '\n';
+              //Component argument replacement
+              //std::cerr << replaceString << '\n';
+              //std::cerr << elementArguments[i] << '\n';
               if (replaceString == argumentReplaces[i])
               {
                 contentString = "";
@@ -418,23 +422,9 @@ component compileComponent(std::string componentName, std::vector<std::string> &
           break;
         case '\n':
           replaceString = "";
-          if (contentString == "=SRC=" ||
-           contentString == "=script=" ||
-           contentString == "=Script=" ||
-              contentString == "=src=" ||
-              contentString == "=Src=" ||
-           contentString == "=source=" ||
-           contentString == "=Source=" ||
-           contentString == "=SOURCE=" ||
-           contentString == "=SCRIPT=" ||
-               contentString == "=JS=" ||
-               contentString == "=js=" ||
-       contentString == "=javascript=" ||
-       contentString == "=Javascript=" ||
-       contentString == "=JavaScript=" ||
-          contentString == "=JAVASCRIPT=")
+          if (contentString == "=SRC=" || contentString == "=src=")
           {
-            SRCparsing = true;
+            SRCCodeParsing = true;
           }
           else
           {

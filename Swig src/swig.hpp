@@ -20,4 +20,4 @@ public:
 	std::string setElement(std::string _element);
 };
 
-component compileComponent(std::string componentName, std::vector<std::string> & elementIDVariables, std::vector<std::string> & elementClassVariables, std::vector<std::string> & elementArguments, bool SRCparsing = false);
+component compileComponent(std::string componentName, std::vector<std::string> & elementIDVariables, std::vector<std::string> & elementClassVariables, std::vector<std::string> & elementArguments);

@@ -131,7 +131,7 @@ terminal = tkscrolled.ScrolledText(state=tk.DISABLED, pady=5, padx=5, bg="black"
 txt_edit = tkscrolled.ScrolledText(window,  bg="#222940", fg="grey", font=("Fixedsys", 11), insertbackground="white")
 window.grid_columnconfigure(0, weight=1)
 
-def scrollHorizontally(textWidget, event):
+def scrollHorizontally(event, textWidget):
     textWidget.xview_scroll((event.delta/120), "units")
 
 def open_file():
