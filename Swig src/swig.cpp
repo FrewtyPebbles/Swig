@@ -157,6 +157,7 @@ component compileComponent(std::string componentName, std::vector<std::string> &
     bool linking = false;
     std::string replaceString;
     std::string instreplaceString;
+    std::vector<std::string> swigelementArguments;
     std::vector<std::string> argumentReplaces;
 	//if component file name doesnt exist return failure
 	try
@@ -278,10 +279,11 @@ component compileComponent(std::string componentName, std::vector<std::string> &
               std::cerr << elementArguments[i] << '\n';
               if (replaceString == argumentReplaces[i])
               {
+                contentString = "";
                 contentString.append(elementArguments[i]);
               }
             }
-            
+
           }
           break;
         case '(':
@@ -312,12 +314,12 @@ component compileComponent(std::string componentName, std::vector<std::string> &
                   if (elementArg == false)
             {
               elementArg = true;
-              
+
             }
             else
             {
               elementArg = false;
-              elementArguments.push_back(elementArgument);
+              swigelementArguments.push_back(elementArgument);
               elementArgument = "";
             }
             }
@@ -331,7 +333,7 @@ component compileComponent(std::string componentName, std::vector<std::string> &
             {
                   if (elementArg)
             {
-              elementArguments.push_back(elementArgument);
+              swigelementArguments.push_back(elementArgument);
               elementArgument = "";
             }
             }
@@ -442,7 +444,7 @@ component compileComponent(std::string componentName, std::vector<std::string> &
               appendScope(scopeContent, scope, contentString);
               compiledElement << contentString << "\n";
             }
-            
+
           }
           scope = 1;
           ++linenum;
@@ -465,7 +467,7 @@ component compileComponent(std::string componentName, std::vector<std::string> &
           appendScope(scopetags, scope, "");
 
 
-          userComponent = compileComponent(scopeElement[scope], elementIDVariables, elementClassVariables, elementArguments);
+          userComponent = compileComponent(scopeElement[scope], elementIDVariables, elementClassVariables, swigelementArguments);
           if(userComponent.getElement() != "null")
           {
             compiledElement << userComponent.getElement();

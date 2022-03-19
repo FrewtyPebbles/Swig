@@ -47,7 +47,7 @@ std::stringstream compileHeirchy(std::fstream &file)
 	std::vector<std::string> scopeContent;
 	std::vector<std::string> scopeElement;
 	std::vector<std::string> scopetags;
-	
+
 	std::string contentString = "";
 	std::string elementString = "";
 	scopeElement.push_back("");
@@ -280,14 +280,15 @@ std::stringstream compileHeirchy(std::fstream &file)
   			characterCheck = false;
   			setScope(scopeElement, scope, elementString);
   			appendScope(scopetags, scope, "");
-			
-			
-			if(elementArguments.size())std::cerr << elementArguments[0] << '\n';
+
+
+			//if(elementArguments.size())std::cerr << elementArguments[0] << '\n';
   			userComponent = compileComponent(scopeElement[scope], elementIDVariables, elementClassVariables, elementArguments);
   			if(userComponent.getElement() != "null")
   			{
   				CompiledHTML << userComponent.getElement();
           CompiledJavascript << userComponent.getScript();
+          elementArguments.clear();
   				setScope(scopeElement, scope, "");
   				setScope(scopetags, scope, "");
   				scopeElement[scope] = "component";

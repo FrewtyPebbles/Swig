@@ -1,12 +1,21 @@
-#div style[background-color<red>width<100px>text-align<center>border-style<solid>border-radius<10px>]:
+@Title!
+@item1!
+@item2!
+@item3!
+@item4!
+@item5!
+#div style[background-color<red>width<400px>text-align<center>border-style<solid>border-radius<10px>]:
 	#div:
 		#p:
-		item1
+		Title^
 		#p:
-		item2
+		item1^
 		#p:
-		item3
+		item2^
 		#p:
-		item4
+		item3^
 		#p:
-		item5
+		item4^
+		#p:
+		item5^
+
