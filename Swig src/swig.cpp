@@ -1,12 +1,12 @@
 #include "swig.hpp"
 
-component::component(){};
+component::component(){}
 
 component::component(std::string _script, std::string _element)
 {
     script = _script;
     element = _element;
-};
+}
 std::string component::getScript()
 {
     return script;
