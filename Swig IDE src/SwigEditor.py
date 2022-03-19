@@ -223,7 +223,7 @@ def save_file(saveAs = False):
 				currentFilepath = filepath
 				tabs.tab(tabs.select(), text=currentFilepath)
 			if (filepath.split('.')[1]) == "swigh":
-				result = subprocess.Popen(["./Swig", "-sh", f"{filepath.split('.')[0]}"], stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+				result = subprocess.Popen(["./Swig.exe", "-sh", f"{filepath.split('.')[0]}"], stderr=subprocess.PIPE, stdout=subprocess.PIPE)
 				out, err = result.communicate()
 				terminal.config(state=tk.NORMAL)
 				terminal.delete(1.0,"end")
