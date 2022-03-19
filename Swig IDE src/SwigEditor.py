@@ -1,4 +1,3 @@
-import os
 import subprocess
 import threading
 import time
@@ -201,7 +200,7 @@ def save_file(saveAs = False):
 				text = active_object.get(1.0, tk.END)
 				output_file.write(text)
 			if (currentFilepath.split('.')[1]) == "swigh":
-				result = subprocess.Popen(["./Swig", "-sh", f"{currentFilepath.split('.')[0]}"], stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+				result = subprocess.Popen(["./Swig.exe", "-sh", f"{currentFilepath.split('.')[0]}"], stderr=subprocess.PIPE, stdout=subprocess.PIPE)
 				out, err = result.communicate()
 				terminal.config(state=tk.NORMAL)
 				terminal.delete(1.0,"end")
@@ -302,86 +301,93 @@ def handle_tab_changed(event):
 
 tabs.bind("<<NotebookTabChanged>>", handle_tab_changed)
 keyboard.add_hotkey("ctrl+s", lambda: save_file())
+highlighting = True
 #syntax
-def syntaxHighlight():
+def syntaxHighlightThread():
 	global currentFilepath
-	while True:
-		if tabs.tab(tabs.select(), "text") != "Notes":
-			currentFilepath = tabs.select()
-			active_tab = (tabs.nametowidget(tabs.select()).winfo_children()[1]).winfo_children()[1]
-			active_tab.tag_configure("element", foreground="#ee00ff")
-			active_tab.tag_configure("default", foreground="white")
-			active_tab.tag_configure("tag", foreground="#7fc6db")
-			active_tab.tag_configure("tagparameter", foreground="#10ff00")
-			active_tab.tag_configure("id", foreground="#cf6380")
-			active_tab.tag_configure("class", foreground="#75e6e4")
+	global highlighting
+	if tabs.tab(tabs.select(), "text") != "Notes" and highlighting:
+		highlighting = False
+		currentFilepath = tabs.select()
+		active_tab = (tabs.nametowidget(tabs.select()).winfo_children()[1]).winfo_children()[1]
+		active_tab.tag_configure("element", foreground="#ee00ff")
+		active_tab.tag_configure("default", foreground="white")
+		active_tab.tag_configure("tag", foreground="#7fc6db")
+		active_tab.tag_configure("tagparameter", foreground="#10ff00")
+		active_tab.tag_configure("id", foreground="#cf6380")
+		active_tab.tag_configure("class", foreground="#75e6e4")
+		#active_tab.tag_add("default", "1.0", "end-1c")
+		addLinenum = False
+		lineNum = 1
+		columnNum = 0
+		syntax = 'n'
+		editorText = active_tab.get("1.0",tk.END)
+		for i in range(0,len(editorText)):
+			char = editorText[i]
 			addLinenum = False
-			lineNum = 1
-			columnNum = 0
-			syntax = 'n'
-			editorText = active_tab.get("1.0",tk.END)
-			for i in range(0,len(editorText)):
-				char = editorText[i]
-				addLinenum = False
-				if char == '\n':
-					syntax = 'n'
-					columnNum = 0
-					addLinenum = True
-				elif char == '\r':
-					syntax = 'n'
-					columnNum = 0
-					addLinenum = True
-				elif char == '\t':
-					syntax = 'n'
-				elif char == '#':
-					syntax = 'e'
-				elif char == ':':
-					syntax = 'n'
-				elif char == '[':
-					syntax = 't'
-				elif char == ']':
-					syntax = 'e'
-				elif char == '{':
-					syntax = 'i'
-				elif char == '}':
-					syntax = 'e'
-				elif char == '(':
-					syntax = 'c'
-				elif char == ')':
-					syntax = 'e'
-				elif char == '<':
-					syntax = 'p'
-				elif char == '>':
-					syntax = 't'
+			if char == '\n':
+				syntax = 'n'
+				columnNum = 0
+				addLinenum = True
+			elif char == '\r':
+				syntax = 'n'
+				columnNum = 0
+				addLinenum = True
+			elif char == '\t':
+				syntax = 'n'
+			elif char == '#':
+				syntax = 'e'
+			elif char == ':':
+				syntax = 'n'
+			elif char == '[':
+				syntax = 't'
+			elif char == ']':
+				syntax = 'e'
+			elif char == '{':
+				syntax = 'i'
+			elif char == '}':
+				syntax = 'e'
+			elif char == '(':
+				syntax = 'c'
+			elif char == ')':
+				syntax = 'e'
+			elif char == '<':
+				syntax = 'p'
+			elif char == '>':
+				syntax = 't'
 
-				if syntax == 'n':
-					active_tab.tag_add("default", f"{lineNum}.{columnNum-1}", f"{lineNum}.{columnNum+1}")
-				elif syntax == 'e':
-					active_tab.tag_add("element", f"{lineNum}.{columnNum-1}", f"{lineNum}.{columnNum+1}")
-				elif syntax == 't':
-					active_tab.tag_add("tag", f"{lineNum}.{columnNum-1}", f"{lineNum}.{columnNum+1}")
-				elif syntax == 'c':
-					active_tab.tag_add("class", f"{lineNum}.{columnNum-1}", f"{lineNum}.{columnNum+1}")
-				elif syntax == 'i':
-					active_tab.tag_add("id", f"{lineNum}.{columnNum-1}", f"{lineNum}.{columnNum+1}")
-				elif syntax == 'p':
-					active_tab.tag_add("tagparameter", f"{lineNum}.{columnNum-1}", f"{lineNum}.{columnNum+1}")
-				if addLinenum == True:
-					lineNum += 1
-				columnNum += 1
-			time.sleep(1)
-			active_tab.tag_add("default+1c", "1.0", "end-1c")
+			if syntax == 'n':
+				active_tab.tag_add("default", f"{lineNum}.{columnNum}", f"{lineNum}.{columnNum+1}")
+			elif syntax == 'e':
+				active_tab.tag_add("element", f"{lineNum}.{columnNum-1}", f"{lineNum}.{columnNum+1}")
+			elif syntax == 't':
+				active_tab.tag_add("tag", f"{lineNum}.{columnNum-1}", f"{lineNum}.{columnNum+1}")
+			elif syntax == 'c':
+				active_tab.tag_add("class", f"{lineNum}.{columnNum-1}", f"{lineNum}.{columnNum+1}")
+			elif syntax == 'i':
+				active_tab.tag_add("id", f"{lineNum}.{columnNum-1}", f"{lineNum}.{columnNum+1}")
+			elif syntax == 'p':
+				active_tab.tag_add("tagparameter", f"{lineNum}.{columnNum-1}", f"{lineNum}.{columnNum+1}")
+			if addLinenum == True:
+				lineNum += 1
+			columnNum += 1
+		time.sleep(0.1)
+		highlighting = True
+		
+
+def syntaxHighlight(event):
+	threading.Thread(target=syntaxHighlightThread, daemon=True).start()
 
 
 #line numbers
-def drawLineNums(event):
+def drawLineNumsThread():
 	global currentFilepath
 	#tempLinenum = 1
 	currentLN = 0
 	#NewLineNumbers = ""
 	#while True:
 	if tabs.tab(tabs.select(), "text") != "Notes":
-		#time.sleep(1)
+		#time.sleep(0.5)
 		inactive_tab = (tabs.nametowidget(tabs.select()).winfo_children()[0])
 		active_tab = (tabs.nametowidget(tabs.select()).winfo_children()[1]).winfo_children()[1]
 		editorText = active_tab.get("1.0",tk.END)
@@ -395,17 +401,20 @@ def drawLineNums(event):
 		scrollbarElem = (tabs.nametowidget(tabs.select()).winfo_children()[1]).winfo_children()[1]
 		codepos = scrollbarElem.yview()
 		threading.Thread(target=inactive_tab.yview_moveto(codepos[0]), daemon=True).start()
+
+def drawLineNums(event):
+	drawLineNumsThread()
 #
 
 
-t1 = threading.Thread(target=syntaxHighlight, name='t1', daemon=True)
-t1.start()
+
 #t2 = threading.Thread(target=drawLineNums, name='t2', daemon=True)
 #t2.start()
 
-window.bind_all('<KeyPress>', drawLineNums, add="+")
+window.bind_all('<Key>', drawLineNums, add="+")
 window.bind('<Motion>', drawLineNums, add="+")
 window.bind_all('<MouseWheel>', drawLineNums, add="+")
+window.bind_all('<Key>', syntaxHighlight, add="+")
 #t3 = threading.Thread(target=linkScrollbar, name='t3', daemon=True)
 #t3.start()
 

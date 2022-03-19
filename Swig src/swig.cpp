@@ -73,7 +73,7 @@ std::string parseVariables(std::string input, std::vector<std::string> Classvari
   return input;
 }
 
-std::string compileScript(char character, std::vector<std::string> & elementIDVariables, std::vector<std::string> & elementClassVariables, std::stringstream & compiledJavascript, std::string & scriptWordStream)
+void compileScript(char character, std::vector<std::string> & elementIDVariables, std::vector<std::string> & elementClassVariables, std::stringstream & compiledJavascript, std::string & scriptWordStream)
 {
   switch(character)
   {
@@ -124,7 +124,7 @@ std::string compileScript(char character, std::vector<std::string> & elementIDVa
 }
 
 
-component compileComponent(std::string componentName, std::vector<std::string> & elementIDVariables, std::vector<std::string> & elementClassVariables, bool SRCparsing)
+component compileComponent(std::string componentName, std::vector<std::string> & elementIDVariables, std::vector<std::string> & elementClassVariables, std::vector<std::string> & elementArguments, bool SRCparsing)
 {
   std::string IDString = "";
   std::string ClassString = "";
@@ -135,7 +135,7 @@ component compileComponent(std::string componentName, std::vector<std::string> &
     std::stringstream compiledJavascript;
     std::ifstream componentFile;
     char character;
-  	char lastCharacter = 'a';
+  	char lastCharacter = '$';
   	std::vector<std::string> scopeContent;
   	std::vector<std::string> scopeElement;
   	std::vector<std::string> scopetags;
@@ -151,7 +151,13 @@ component compileComponent(std::string componentName, std::vector<std::string> &
   	bool element = true;
     bool sqrbrackets = false;
     bool escape = false;
-
+    //Element arguments
+    bool elementArg = false;
+    std::string elementArgument;
+    bool linking = false;
+    std::string replaceString;
+    std::string instreplaceString;
+    std::vector<std::string> argumentReplaces;
 	//if component file name doesnt exist return failure
 	try
     {
@@ -177,10 +183,19 @@ component compileComponent(std::string componentName, std::vector<std::string> &
         switch (character)
         {
         case ' ':
+          if (elementArg == true)
+          {
+            elementArgument.push_back(character);
+          }
           element = false;
+          replaceString = "";
           contentString.push_back(character);
           break;
         case ',':
+          if (elementArg == true)
+          {
+            elementArgument.push_back(character);
+          }
           if (characterCheck)
           {
             contentString.append(" ");
@@ -189,6 +204,7 @@ component compileComponent(std::string componentName, std::vector<std::string> &
           {
             contentString.push_back(character);
           }
+          replaceString = "";
           break;
         case '#':
           if (sqrbrackets == false)
@@ -223,6 +239,51 @@ component compileComponent(std::string componentName, std::vector<std::string> &
             contentString.append("#");
           }
           break;
+        case '@'://acts as a linker symbol & a declarator
+          if (lastCharacter == '$' || lastCharacter == '\n')
+          {
+            instreplaceString = "";
+            linking = true;
+          }
+          else
+          {
+            contentString.push_back(character);
+          }
+          break;
+        case '!'://tells linker that it is a variable
+          if (linking)
+          {
+            argumentReplaces.push_back(instreplaceString);
+            instreplaceString = "";
+            contentString = "";
+            elementString = "";
+            linking = false;
+          }
+          else
+          {
+            contentString.push_back(character);
+          }
+          break;
+        case '^':
+          if (characterCheck)
+          {
+            contentString.push_back(character);
+          }
+          else
+          {
+            for (size_t i = 0; i < argumentReplaces.size(); ++i)
+            {
+              //swag
+              std::cerr << replaceString << '\n';
+              std::cerr << elementArguments[i] << '\n';
+              if (replaceString == argumentReplaces[i])
+              {
+                contentString.append(elementArguments[i]);
+              }
+            }
+            
+          }
+          break;
         case '(':
           if (characterCheck && sqrbrackets == false)
           {
@@ -245,6 +306,40 @@ component compileComponent(std::string componentName, std::vector<std::string> &
             contentString.push_back(character);
           }
           break;
+        case '|':
+            if (characterCheck)
+            {
+                  if (elementArg == false)
+            {
+              elementArg = true;
+              
+            }
+            else
+            {
+              elementArg = false;
+              elementArguments.push_back(elementArgument);
+              elementArgument = "";
+            }
+            }
+            else
+            {
+              contentString.push_back(character);
+            }
+            break;
+        case '&':
+            if (characterCheck)
+            {
+                  if (elementArg)
+            {
+              elementArguments.push_back(elementArgument);
+              elementArgument = "";
+            }
+            }
+            else
+            {
+              contentString.push_back(character);
+            }
+            break;
         case '[':
           sqrbrackets = true;
           if (characterCheck)
@@ -291,6 +386,7 @@ component compileComponent(std::string componentName, std::vector<std::string> &
           break;
         case '`':
           escape = true;
+          replaceString = "";
           break;
         case '<':
           if (characterCheck)
@@ -301,6 +397,7 @@ component compileComponent(std::string componentName, std::vector<std::string> &
           {
             contentString.push_back(character);
           }
+          replaceString = "";
           break;
         case '>':
           if (characterCheck)
@@ -311,12 +408,14 @@ component compileComponent(std::string componentName, std::vector<std::string> &
           {
             contentString.push_back(character);
           }
+          replaceString = "";
           break;
         case '\t':
           scope++;
           lastCharacter = character;
           break;
         case '\n':
+          replaceString = "";
           if (contentString == "=SRC=" ||
            contentString == "=script=" ||
            contentString == "=Script=" ||
@@ -341,8 +440,9 @@ component compileComponent(std::string componentName, std::vector<std::string> &
             {
               contentString.push_back(character);
               appendScope(scopeContent, scope, contentString);
+              compiledElement << contentString << "\n";
             }
-            compiledElement << contentString << "\n";
+            
           }
           scope = 1;
           ++linenum;
@@ -365,7 +465,7 @@ component compileComponent(std::string componentName, std::vector<std::string> &
           appendScope(scopetags, scope, "");
 
 
-          userComponent = compileComponent(scopeElement[scope], elementIDVariables, elementClassVariables);
+          userComponent = compileComponent(scopeElement[scope], elementIDVariables, elementClassVariables, elementArguments);
           if(userComponent.getElement() != "null")
           {
             compiledElement << userComponent.getElement();
@@ -385,6 +485,12 @@ component compileComponent(std::string componentName, std::vector<std::string> &
           contentString = "";
           break;
         default:
+          if (elementArg == true)
+          {
+            elementArgument.push_back(character);
+          }
+          replaceString.push_back(character);
+          instreplaceString.push_back(character);
           ClassString.push_back(character);
           IDString.push_back(character);
           if (lastCharacter != '\n' && lastCharacter != '\r' && lastCharacter != '\t')

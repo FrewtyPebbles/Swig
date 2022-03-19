@@ -47,6 +47,7 @@ std::stringstream compileHeirchy(std::fstream &file)
 	std::vector<std::string> scopeContent;
 	std::vector<std::string> scopeElement;
 	std::vector<std::string> scopetags;
+	
 	std::string contentString = "";
 	std::string elementString = "";
 	scopeElement.push_back("");
@@ -58,8 +59,13 @@ std::stringstream compileHeirchy(std::fstream &file)
 	bool characterCheck = true;
 	bool element = true;
 	component userComponent;
-  bool escape = false;
-  bool sqrbrackets = false;
+  	bool escape = false;
+ 	bool sqrbrackets = false;
+	//Element arguments
+	bool elementArg = false;
+	std::vector<std::string> elementArguments;
+	std::string elementArgument = "";
+	//
 	while (file >> std::noskipws >> character)
 	{
     //Start of parser
@@ -68,10 +74,18 @@ std::stringstream compileHeirchy(std::fstream &file)
   		switch (character)
   		{
   		case ' ':
+		  	if (elementArg == true)
+			{
+				elementArgument.push_back(character);
+			}
   			element = false;
   			contentString.push_back(character);
   			break;
   		case ',':
+		  	if (elementArg == true)
+			{
+				elementArgument.push_back(character);
+			}
   			if (characterCheck)
   			{
   				contentString.append(" ");
@@ -128,8 +142,41 @@ std::stringstream compileHeirchy(std::fstream &file)
   		case ')':
   			if (characterCheck && sqrbrackets == false)
   			{
-          elementClassVariables.push_back(ClassString);
+         		elementClassVariables.push_back(ClassString);
   				contentString.append("\" ");
+  			}
+  			else
+  			{
+  				contentString.push_back(character);
+  			}
+  			break;
+		case '|':
+  			if (characterCheck)
+  			{
+          		if (elementArg == false)
+				{
+					elementArg = true;
+				}
+				else
+				{
+					elementArg = false;
+					elementArguments.push_back(elementArgument);
+					elementArgument = "";
+				}
+  			}
+  			else
+  			{
+  				contentString.push_back(character);
+  			}
+  			break;
+		case '&':
+  			if (characterCheck)
+  			{
+          		if (elementArg)
+				{
+					elementArguments.push_back(elementArgument);
+					elementArgument = "";
+				}
   			}
   			else
   			{
@@ -233,9 +280,10 @@ std::stringstream compileHeirchy(std::fstream &file)
   			characterCheck = false;
   			setScope(scopeElement, scope, elementString);
   			appendScope(scopetags, scope, "");
-
-
-  			userComponent = compileComponent(scopeElement[scope], elementIDVariables, elementClassVariables);
+			
+			
+			if(elementArguments.size())std::cerr << elementArguments[0] << '\n';
+  			userComponent = compileComponent(scopeElement[scope], elementIDVariables, elementClassVariables, elementArguments);
   			if(userComponent.getElement() != "null")
   			{
   				CompiledHTML << userComponent.getElement();
@@ -256,43 +304,50 @@ std::stringstream compileHeirchy(std::fstream &file)
   			contentString = "";
   			break;
   		default:
-        ClassString.push_back(character);
-        IDString.push_back(character);
-  			if (lastCharacter != '\n' && lastCharacter != '\r' && lastCharacter != '\t')
-  			{
-  				if (scope < lastscope)
-  				{
-  					for (unsigned i = lastscope; i > scope; --i)
-  					{
-  						if (scopeElement[i] != "" && scopeElement[i] != "component")
-  						{
-  						CompiledHTML << "</"<< scopeElement[i] << ">\n";
-  						scopeElement[i] = "";
-  						}
-  					}
-  					lastscope = scope;
-  				}
-  			}
-  			if (lastCharacter == ':')
-  			{
-  				std::cerr << " > ERROR L:" << linenum << " > Characters found on the right side of ':'.\n";
-  			}
+		if (elementArg == true)
+		{
+			elementArgument.push_back(character);
+		}
+		else
+		{
+			ClassString.push_back(character);
+			IDString.push_back(character);
+			if (lastCharacter != '\n' && lastCharacter != '\r' && lastCharacter != '\t')
+			{
+				if (scope < lastscope)
+				{
+					for (unsigned i = lastscope; i > scope; --i)
+					{
+						if (scopeElement[i] != "" && scopeElement[i] != "component")
+						{
+						CompiledHTML << "</"<< scopeElement[i] << ">\n";
+						scopeElement[i] = "";
+						}
+					}
+					lastscope = scope;
+				}
+			}
+			if (lastCharacter == ':')
+			{
+				std::cerr << " > ERROR L:" << linenum << " > Characters found on the right side of ':'.\n";
+			}
 
-  			if (characterCheck)
-  			{
-  				if (element == true)
-  				{
-  					elementString.push_back(character);
-  				}
-  				else
-  				{
-  					contentString.push_back(character);
-  				}
-  			}
-  			else
-  			{
-  			contentString.push_back(character);
-  			}
+			if (characterCheck)
+			{
+				if (element == true)
+				{
+					elementString.push_back(character);
+				}
+				else
+				{
+					contentString.push_back(character);
+				}
+			}
+			else
+			{
+			contentString.push_back(character);
+			}
+		}
   			break;
   		}
       lastCharacter = character;
