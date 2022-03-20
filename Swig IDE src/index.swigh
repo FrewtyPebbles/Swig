@@ -1,0 +1,10 @@
+#header:
+	#h1 {Title} style[text-indent<5%>]:
+	GWIG
+	#h4 {subTitle} style[text-indent<10%>]:
+	Tabular and efficient frontend development.
+#body:
+	#pagesBar:
+	#div style[padding<10px> margin-left<1%> background<#adadad>width<90%>]:
+		#updatePannel |Change Log&test.&test2.&test3.&test4.&test5.|:
+		
