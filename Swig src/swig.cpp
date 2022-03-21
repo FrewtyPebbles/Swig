@@ -279,8 +279,6 @@ component compileComponent(std::string componentName, std::vector<std::string> &
             for (size_t i = 0; i < argumentReplaces.size(); ++i)
             {
               //Component argument replacement
-              //std::cerr << replaceString << '\n';
-              //std::cerr << elementArguments[i] << '\n';
               if (replaceString == argumentReplaces[i])
               {
                 contentString = "";
