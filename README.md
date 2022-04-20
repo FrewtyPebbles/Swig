@@ -17,4 +17,5 @@ In Swig, there are 3 file types: *.swigh*, *.swig*, and *.swigs* .
  # The Swig IDE:
 
  * _The swig IDE is still in an early development build and may have many bugs, freezes, and crashes (Especially if using SwigEditorHeavy.py). Keep this in mind._
+
 The swig IDE allows you to quickly test your web pages by recompiling them every time you press save. It also provides syntax highlighting and an html3 display for the _SwigEditorHeavy.py_.
