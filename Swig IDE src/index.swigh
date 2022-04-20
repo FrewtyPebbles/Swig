@@ -1,0 +1,13 @@
+#header:
+	#h1 {Title} style[text-indent<5%>]:
+	GWIG
+	#h4 {subTitle} style[text-indent<10%>]:
+	Tabular and efficient frontend development.
+#body:
+	#pagesBar:
+	#div style[font-family<sans-serif> padding<10px> margin-left<1%> background<#adadad>width<90%>]:
+		#updatePannel |Change Log&Dev - 0.4.7&Implemented component substitutions via component arguments.&Fixed recursive components.&Fixed IDE freezing bug.&Implemented =SRC= for scripting.&Fixed cairrage return bug.|:
+		#div style[margin<10px>text-indent<8%>]:
+		Welcome to the Gwig foundation
+		#div style[text-indent<3%>line-height<200%>]:
+		Here at the Gwig foundation, we are dedicated to making web development readable, intuitive, efficient and enjoyable.

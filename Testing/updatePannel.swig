@@ -1,4 +1,5 @@
 @logTitle!
+@verNumb!
 @Change1!
 @Change2!
 @Change3!
@@ -7,6 +8,8 @@
 #h3 style[text-align<center>]:
 	logTitle^
 #div style[color<white>background-color<grey>]:
+	#h4 style[padding<10px>]:
+	verNumb^
 	#ol:
 		#li:
 		Change1^
@@ -16,5 +19,6 @@
 		Change3^
 		#li:
 		Change4^
-		#li:
+		#li style[padding-bottom<10px>]:
 		Change5^
+
