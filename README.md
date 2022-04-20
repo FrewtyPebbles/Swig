@@ -8,7 +8,7 @@
  * Shortened get element syntax for JavaScript.
 
  # Component file structure:
-	In Swig, there are 3 file types: *.swigh*, *.swig*, and *.swigs* .
+In Swig, there are 3 file types: *.swigh*, *.swig*, and *.swigs* .
 
  * _.swigh_ files acts as the root of your component tree and is where you place your custom components. Do not try to place javaScript in these files.  JavaScript should be placed in your component files after a _=SRC=_ tag.
  * _.swig_ files are where you create your component elements.
