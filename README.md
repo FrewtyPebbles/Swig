@@ -1,5 +1,5 @@
  # Swig v0.4.7
- Swig is a transpiler that compiles to HTML and JavaScript.  It has some special features that maximize efficiency and add new functionality to the standard vanilla web development tools.
+ Swig is a transpiler that compiles to HTML and JavaScript that I wrote as a learning experiment.  It has some special features that maximize efficiency and add new functionality to the standard vanilla web development tools.
 
  # Features:
 
